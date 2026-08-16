@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SortingVisualizer from '../../../components/algorithms/SortingVisualizer.vue';
+---
+<BaseLayout title="堆排序动画演示 - Demo Center" description="堆排序算法动画演示，最大堆构建与提取，Java 代码同步高亮">
+  <article class="max-w-5xl mx-auto px-6 py-10">
+    <a href="/algorithms" class="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-slate-400 hover:text-accent-dark dark:hover:text-accent transition-colors mb-6">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      返回算法列表
+    </a>
+    <header class="mb-8">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-3xl">🌳</span>
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">排序</span>
+            <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800">不稳定</span>
+            <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">O(n log n)</span>
+          </div>
+          <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">堆排序 (Heap Sort)</h1>
+        </div>
+      </div>
+      <p class="text-gray-600 dark:text-slate-400 max-w-3xl leading-relaxed">
+        利用堆数据结构排序。先构建最大堆，然后反复将堆顶（最大值）与末尾交换，缩小堆并重新堆化。时间复杂度稳定 O(n log n)，原地排序。
+      </p>
+      <div class="flex flex-wrap gap-2 mt-4">
+        {['最大堆', '堆化操作', '原地排序', '不稳定', '稳定 O(n log n)'].map(s => (
+          <span class="px-3 py-1 text-xs rounded-full bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 border border-gray-200 dark:border-slate-700">{s}</span>
+        ))}
+      </div>
+    </header>
+    <SortingVisualizer client:load algorithm="heap" initialArray={[4, 10, 3, 5, 1, 8, 7, 2, 6, 9]} />
+    <section class="mt-12 space-y-6">
+      <h2 class="text-xl font-bold text-gray-900 dark:text-white">算法详解</h2>
+      <div class="p-5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 space-y-3">
+        <h3 class="text-sm font-bold text-gray-900 dark:text-white">核心思想</h3>
+        <p class="text-sm text-gray-600 dark:text-slate-400 leading-relaxed">
+          堆排序分两阶段：① 建堆 — 从最后一个非叶子节点开始，自底向上调用 heapify，构建最大堆；
+          ② 提取 — 将堆顶（最大值）与末尾交换，缩小堆范围，对新堆顶执行 heapify 恢复堆性质。紫色柱子表示当前 heapify 的节点。
+        </p>
+      </div>
+      <div class="p-5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 space-y-3">
+        <h3 class="text-sm font-bold text-gray-900 dark:text-white">复杂度分析</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-gray-600 dark:text-slate-400">
+            <thead>
+              <tr class="border-b border-gray-200 dark:border-slate-700">
+                <th class="text-left py-2 pr-4 font-medium">场景</th>
+                <th class="text-left py-2 pr-4 font-medium">时间复杂度</th>
+                <th class="text-left py-2 font-medium">说明</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-slate-800">
+              <tr><td class="py-2 pr-4">最优</td><td class="py-2 pr-4 font-mono text-green-600 dark:text-green-400">O(n log n)</td><td class="py-2 text-xs">建堆 O(n)，提取 n 次 × heapify O(log n)</td></tr>
+              <tr><td class="py-2 pr-4">平均</td><td class="py-2 pr-4 font-mono text-amber-600 dark:text-amber-400">O(n log n)</td><td class="py-2 text-xs">与输入数据无关，始终 O(n log n)</td></tr>
+              <tr><td class="py-2 pr-4">最差</td><td class="py-2 pr-4 font-mono text-red-500 dark:text-red-400">O(n log n)</td><td class="py-2 text-xs">最差也是 O(n log n)，性能稳定</td></tr>
+              <tr><td class="py-2 pr-4">空间</td><td class="py-2 pr-4 font-mono text-blue-600 dark:text-blue-400">O(1)</td><td class="py-2 text-xs">原地排序，递归栈 O(log n)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </article>
+</BaseLayout>

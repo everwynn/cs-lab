@@ -1,0 +1,99 @@
+---
+import ThemeToggle from './ThemeToggle.vue';
+
+const currentPath = Astro.url.pathname;
+
+const navLinks = [
+  { href: '/', label: '首页' },
+  { href: '/algorithms', label: '算法' },
+  { href: '/data-structures', label: '数据结构' },
+  { href: '/design-patterns', label: '设计模式' },
+  { href: '/git-workflow', label: 'Git 工作流' },
+  { href: '/about', label: '关于' },
+];
+---
+
+<header class="glass border-b border-gray-200 dark:border-slate-800 sticky top-0 z-50 shadow-sm dark:shadow-none">
+  <nav class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="/" class="text-xl font-bold text-gray-900 dark:text-white hover:text-accent dark:hover:text-accent-light transition-colors flex items-center gap-2">
+      <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      CS Lab
+    </a>
+
+    <!-- Desktop Nav + Theme Toggle -->
+    <div class="flex items-center gap-6">
+      <ul class="hidden md:flex items-center gap-8">
+        {navLinks.map(({ href, label }) => (
+          <li>
+            <a
+              href={href}
+              class:list={[
+                'text-sm font-medium transition-colors',
+                (href === '/' ? currentPath === href : currentPath.startsWith(href))
+                  ? 'text-accent-dark dark:text-accent'
+                  : 'text-gray-700 dark:text-slate-300 hover:text-accent-dark dark:hover:text-white',
+              ]}
+            >
+              {label}
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <!-- Theme Toggle -->
+      <div class="hidden md:block">
+        <ThemeToggle client:load />
+      </div>
+
+      <!-- Mobile Nav Toggle -->
+      <button
+        id="menu-toggle"
+        class="md:hidden text-gray-700 dark:text-slate-300 hover:text-accent dark:hover:text-white"
+        aria-label="Toggle menu"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 dark:border-slate-800">
+    <ul class="px-6 py-4 space-y-3">
+      {navLinks.map(({ href, label }) => (
+        <li>
+          <a
+            href={href}
+            class:list={[
+              'block text-sm font-medium transition-colors',
+              (href === '/' ? currentPath === href : currentPath.startsWith(href))
+                ? 'text-accent-dark dark:text-accent'
+                : 'text-gray-700 dark:text-slate-300 hover:text-accent-dark dark:hover:text-white',
+            ]}
+          >
+            {label}
+          </a>
+        </li>
+      ))}
+      <!-- Mobile Theme Toggle -->
+      <li class="pt-3 border-t border-gray-200 dark:border-slate-700">
+        <div class="flex items-center gap-3">
+          <span class="text-sm text-gray-700 dark:text-slate-400 font-medium">主题切换</span>
+          <ThemeToggle client:load />
+        </div>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById('menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+  toggle?.addEventListener('click', () => {
+    menu?.classList.toggle('hidden');
+  });
+</script>

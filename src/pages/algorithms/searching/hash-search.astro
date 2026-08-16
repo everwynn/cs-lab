@@ -1,0 +1,81 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SearchVisualizer from '../../../components/algorithms/SearchVisualizer.vue';
+---
+
+<BaseLayout title="哈希查找动画演示 - Demo Center" description="哈希查找算法可视化演示：通过哈希函数定位桶，再用拉链法处理冲突，Java 代码同步高亮">
+  <article class="max-w-5xl mx-auto px-6 py-10">
+    <a href="/algorithms" class="inline-flex items-center gap-1 text-sm text-accent-dark dark:text-accent hover:underline mb-6">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      返回算法列表
+    </a>
+
+    <header class="mb-8">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-3xl">🗝️</span>
+        <div>
+          <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">哈希查找</h1>
+          <p class="text-gray-500 dark:text-slate-400 mt-1">Hash Search · 哈希函数 + 拉链法，平均 O(1)</p>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-2 mt-4">
+        <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">无需有序</span>
+        <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400">O(1)</span>
+        <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">O(n) 空间</span>
+      </div>
+    </header>
+
+    <SearchVisualizer client:load algorithm="hash" initialArray={[12, 25, 15, 28, 40, 55, 68]} target={40} />
+
+    <section class="mt-12 space-y-6">
+      <div class="p-6 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-3">核心思想</h2>
+        <p class="text-gray-600 dark:text-slate-400 leading-relaxed">
+          哈希查找通过<strong>哈希函数</strong>把关键字直接映射到存储位置。理想情况下一次计算就能定位，时间复杂度接近 O(1)。当多个关键字映射到同一位置时，用<strong>拉链法</strong>把冲突元素串成链表存放在同一个桶中。
+        </p>
+      </div>
+
+      <div class="p-6 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">复杂度分析</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left">
+            <thead class="text-xs text-gray-500 dark:text-slate-400 uppercase bg-gray-50 dark:bg-slate-800/50">
+              <tr>
+                <th class="px-4 py-2 rounded-l-lg">情况</th>
+                <th class="px-4 py-2">时间复杂度</th>
+                <th class="px-4 py-2 rounded-r-lg">说明</th>
+              </tr>
+            </thead>
+            <tbody class="text-gray-700 dark:text-slate-300">
+              <tr class="border-b border-gray-100 dark:border-slate-800">
+                <td class="px-4 py-3">最优 / 平均</td>
+                <td class="px-4 py-3 font-mono font-bold text-green-600 dark:text-green-400">O(1)</td>
+                <td class="px-4 py-3">哈希函数均匀，冲突少</td>
+              </tr>
+              <tr class="border-b border-gray-100 dark:border-slate-800">
+                <td class="px-4 py-3">最差</td>
+                <td class="px-4 py-3 font-mono font-bold text-red-500 dark:text-red-400">O(n)</td>
+                <td class="px-4 py-3">所有关键字都冲突，退化成链表遍历</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3">空间</td>
+                <td class="px-4 py-3 font-mono font-bold text-blue-600 dark:text-blue-400">O(n)</td>
+                <td class="px-4 py-3">需要额外哈希表存储所有关键字</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="p-6 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-3">冲突处理</h2>
+        <p class="text-gray-600 dark:text-slate-400 leading-relaxed mb-3">
+          本演示使用<strong>拉链法（Separate Chaining）</strong>：每个桶维护一个链表，发生冲突的元素依次追加到链表末尾。查找时先定位到桶，再遍历该桶的链表。
+        </p>
+        <p class="text-gray-600 dark:text-slate-400 leading-relaxed">
+          另一种常见方法是<strong>开放寻址法（Open Addressing）</strong>：冲突时按某种探测序列（线性探测、二次探测、双哈希）寻找下一个空槽。
+        </p>
+      </div>
+    </section>
+  </article>
+</BaseLayout>

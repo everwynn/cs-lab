@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SearchVisualizer from '../../../components/algorithms/SearchVisualizer.vue';
+---
+
+<BaseLayout title="线性查找动画演示 - Demo Center" description="线性查找算法可视化演示：逐个遍历数组元素，比较是否等于目标值，Java 代码同步高亮">
+  <article class="max-w-5xl mx-auto px-6 py-10">
+    <a href="/algorithms" class="inline-flex items-center gap-1 text-sm text-accent-dark dark:text-accent hover:underline mb-6">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      返回算法列表
+    </a>
+
+    <header class="mb-8">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-3xl">🔍</span>
+        <div>
+          <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">线性查找</h1>
+          <p class="text-gray-500 dark:text-slate-400 mt-1">Linear Search · 逐个遍历，简单直接</p>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-2 mt-4">
+        <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">无需有序</span>
+        <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400">O(n)</span>
+        <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">O(1) 空间</span>
+      </div>
+    </header>
+
+    <SearchVisualizer client:load algorithm="linear" initialArray={[4, 2, 8, 5, 1, 9, 3, 7]} target={5} />
+
+    <section class="mt-12 space-y-6">
+      <div class="p-6 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-3">核心思想</h2>
+        <p class="text-gray-600 dark:text-slate-400 leading-relaxed">
+          从数组的第一个元素开始，依次将每个元素与目标值进行比较。如果找到相等的元素，立即返回其下标；如果遍历完整个数组都没找到，则返回 -1。
+        </p>
+      </div>
+
+      <div class="p-6 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">复杂度分析</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left">
+            <thead class="text-xs text-gray-500 dark:text-slate-400 uppercase bg-gray-50 dark:bg-slate-800/50">
+              <tr>
+                <th class="px-4 py-2 rounded-l-lg">情况</th>
+                <th class="px-4 py-2">时间复杂度</th>
+                <th class="px-4 py-2 rounded-r-lg">说明</th>
+              </tr>
+            </thead>
+            <tbody class="text-gray-700 dark:text-slate-300">
+              <tr class="border-b border-gray-100 dark:border-slate-800">
+                <td class="px-4 py-3">最优</td>
+                <td class="px-4 py-3 font-mono font-bold text-green-600 dark:text-green-400">O(1)</td>
+                <td class="px-4 py-3">目标值恰好是第一个元素</td>
+              </tr>
+              <tr class="border-b border-gray-100 dark:border-slate-800">
+                <td class="px-4 py-3">平均 / 最差</td>
+                <td class="px-4 py-3 font-mono font-bold text-amber-600 dark:text-amber-400">O(n)</td>
+                <td class="px-4 py-3">需要遍历大部分或全部元素</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3">空间</td>
+                <td class="px-4 py-3 font-mono font-bold text-blue-600 dark:text-blue-400">O(1)</td>
+                <td class="px-4 py-3">只需一个循环变量</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="p-6 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-3">适用场景</h2>
+        <ul class="list-disc list-inside text-gray-600 dark:text-slate-400 space-y-1">
+          <li>数据量较小，或查找次数很少</li>
+          <li>数组<strong>没有排序</strong>，不方便使用二分查找</li>
+          <li>链表等不支持随机访问的数据结构</li>
+        </ul>
+      </div>
+    </section>
+  </article>
+</BaseLayout>

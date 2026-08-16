@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ============ Light Theme (default) ============ */
+body {
+  @apply bg-gray-50 text-gray-800 font-sans transition-theme duration-300;
+}
+
+/* ============ Dark Theme (深色科技风) ============ */
+.dark body {
+  @apply bg-slate-950 text-slate-200;
+}
+
+/* ============ Links ============ */
+a {
+  @apply text-accent-dark hover:text-accent dark:text-accent dark:hover:text-accent-light transition-colors;
+}
+
+/* ============ Smooth transitions ============ */
+header, footer, main, section, article, div, span, p, h1, h2, h3, h4, h5, h6, li, a, button, time {
+  @apply transition-theme duration-300;
+}
+
+/* ============ 自定义滚动条 (深色科技风) ============ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-slate-900;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-slate-700 rounded;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-accent-dark dark:bg-accent;
+}
+
+/* ============ Prose 样式 (Demo 详情页) ============ */
+.prose {
+  --tw-prose-body: #374151;
+  --tw-prose-headings: #111827;
+  --tw-prose-links: #059669;
+  --tw-prose-code: #059669;
+  --tw-prose-bold: #111827;
+}
+
+.dark .prose {
+  --tw-prose-body: #cbd5e1;
+  --tw-prose-headings: #f1f5f9;
+  --tw-prose-links: #34d399;
+  --tw-prose-code: #34d399;
+  --tw-prose-bold: #f1f5f9;
+  --tw-prose-bg: transparent;
+}
+
+/* ============ 毛玻璃效果 ============ */
+.glass {
+  @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-md;
+}
+
+/* ============ 卡片悬停光效 ============ */
+.card-hover {
+  @apply transition-all duration-300 hover:shadow-2xl hover:shadow-accent/10;
+}
+
+/* ============ 视频播放器容器 ============ */
+.video-container {
+  @apply relative aspect-video bg-slate-900 dark:bg-black rounded-xl overflow-hidden;
+}
+
+/* ============ 标签徽章 ============ */
+.badge {
+  @apply inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full border transition-colors;
+}

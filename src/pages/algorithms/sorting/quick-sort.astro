@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SortingVisualizer from '../../../components/algorithms/SortingVisualizer.vue';
+---
+<BaseLayout title="快速排序动画演示 - Demo Center" description="快速排序算法动画演示，分治法分区排序，基准元素可视化，Java 代码同步高亮">
+  <article class="max-w-5xl mx-auto px-6 py-10">
+    <a href="/algorithms" class="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-slate-400 hover:text-accent-dark dark:hover:text-accent transition-colors mb-6">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      返回算法列表
+    </a>
+    <header class="mb-8">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-3xl">⚡</span>
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">排序</span>
+            <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800">不稳定</span>
+            <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">O(n log n)</span>
+          </div>
+          <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">快速排序 (Quick Sort)</h1>
+        </div>
+      </div>
+      <p class="text-gray-600 dark:text-slate-400 max-w-3xl leading-relaxed">
+        采用分治法：选取一个基准元素（pivot），将数组分为小于和大于基准的两部分，然后递归排序。平均时间复杂度 O(n log n)，是实践中最快的通用排序算法。
+      </p>
+      <div class="flex flex-wrap gap-2 mt-4">
+        {['分治法', '基准元素', '递归排序', '不稳定', '实践最快'].map(s => (
+          <span class="px-3 py-1 text-xs rounded-full bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 border border-gray-200 dark:border-slate-700">{s}</span>
+        ))}
+      </div>
+    </header>
+    <SortingVisualizer client:load algorithm="quick" initialArray={[10, 7, 8, 9, 1, 5, 3, 6, 2, 4]} />
+    <section class="mt-12 space-y-6">
+      <h2 class="text-xl font-bold text-gray-900 dark:text-white">算法详解</h2>
+      <div class="p-5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 space-y-3">
+        <h3 class="text-sm font-bold text-gray-900 dark:text-white">核心思想</h3>
+        <p class="text-sm text-gray-600 dark:text-slate-400 leading-relaxed">
+          快速排序使用分治策略。每次选取最后一个元素作为基准（pivot，紫色柱子），通过 partition 操作将数组分为两部分：
+          左边都 ≤ pivot，右边都 > pivot。基准元素就位后，对左右两部分递归执行同样的操作。
+        </p>
+      </div>
+      <div class="p-5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 space-y-3">
+        <h3 class="text-sm font-bold text-gray-900 dark:text-white">复杂度分析</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-gray-600 dark:text-slate-400">
+            <thead>
+              <tr class="border-b border-gray-200 dark:border-slate-700">
+                <th class="text-left py-2 pr-4 font-medium">场景</th>
+                <th class="text-left py-2 pr-4 font-medium">时间复杂度</th>
+                <th class="text-left py-2 font-medium">说明</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-slate-800">
+              <tr><td class="py-2 pr-4">最优（均衡分区）</td><td class="py-2 pr-4 font-mono text-green-600 dark:text-green-400">O(n log n)</td><td class="py-2 text-xs">每次基准将数组等分</td></tr>
+              <tr><td class="py-2 pr-4">平均</td><td class="py-2 pr-4 font-mono text-amber-600 dark:text-amber-400">O(n log n)</td><td class="py-2 text-xs">实践中常数因子最小</td></tr>
+              <tr><td class="py-2 pr-4">最差（极不均衡）</td><td class="py-2 pr-4 font-mono text-red-500 dark:text-red-400">O(n²)</td><td class="py-2 text-xs">每次基准是最值，退化为 n 层递归</td></tr>
+              <tr><td class="py-2 pr-4">空间</td><td class="py-2 pr-4 font-mono text-blue-600 dark:text-blue-400">O(log n)</td><td class="py-2 text-xs">递归调用栈深度</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </article>
+</BaseLayout>

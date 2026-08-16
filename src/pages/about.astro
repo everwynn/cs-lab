@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const techStack = [
+  { name: 'Astro', desc: '静态站点生成器' },
+  { name: 'Vue 3', desc: '交互式组件' },
+  { name: 'Tailwind CSS', desc: '样式框架' },
+  { name: 'TypeScript', desc: '类型安全' },
+  { name: 'SVG', desc: '动态可视化' },
+];
+---
+
+<BaseLayout title="关于 - CS Lab" description="关于 CS Lab 计算机基础可视化学习平台">
+  <section class="max-w-3xl mx-auto px-6 py-16">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">关于 CS Lab</h1>
+
+    <div class="prose dark:prose-invert max-w-none">
+      <p>
+        <strong>CS Lab</strong> 是一个计算机基础知识的交互式可视化学习平台，通过逐步动画与代码同步高亮，帮助学习者理解 <strong>算法、数据结构、设计模式</strong> 和 <strong>Git 工作流</strong> 等核心概念。
+      </p>
+
+      <p>
+        每个主题都包含 <strong>可视化动画</strong>、<strong>步骤说明</strong> 和 <strong>Java 代码实现</strong>，学习者可以播放、暂停、单步前进后退，按照自己的节奏理解每一个细节。
+      </p>
+
+      <h2>当前覆盖内容</h2>
+      <ul>
+        <li><strong>算法</strong> — 排序、搜索、图论等经典算法的执行过程可视化</li>
+        <li><strong>数据结构</strong> — 栈、队列、链表、哈希表、二叉树、堆、Trie、并查集等结构</li>
+        <li><strong>设计模式</strong> — 单例、工厂、观察者、策略、装饰器等常用模式</li>
+        <li><strong>Git 工作流</strong> — 分支、合并、Rebase、冲突解决、Git Flow 等协作流程</li>
+      </ul>
+
+      <h2>技术栈</h2>
+    </div>
+
+    <!-- 技术栈标签 -->
+    <div class="flex flex-wrap gap-3 mt-6">
+      {techStack.map((tech) => (
+        <div class="px-4 py-2 rounded-lg bg-white dark:bg-slate-900/50 border border-gray-200 dark:border-slate-800 text-center">
+          <div class="text-sm font-medium text-gray-900 dark:text-white">{tech.name}</div>
+          <div class="text-xs text-gray-500 dark:text-slate-500">{tech.desc}</div>
+        </div>
+      ))}
+    </div>
+
+    <!-- 相关链接 -->
+    <div class="mt-12 p-6 rounded-xl bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-800">
+      <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-3">相关链接</h2>
+      <p class="text-sm text-gray-600 dark:text-slate-400 mb-3">
+        查看这些概念在真实项目中的应用：
+      </p>
+      <div class="flex flex-wrap gap-4 text-sm">
+        <a href="https://xxx.live" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-accent-dark dark:text-accent hover:underline">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+          </svg>
+          TechHub 项目展示
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

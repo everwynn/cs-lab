@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { allPatterns } from '../../components/designPatterns/patternDefinitions';
+
+const categories: Record<string, string> = {
+  creational: '创建型',
+  structural: '结构型',
+  behavioral: '行为型',
+};
+
+const categoryColors: Record<string, string> = {
+  creational: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+  structural: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800',
+  behavioral: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800',
+};
+---
+
+<BaseLayout title="设计模式演示 - Demo Center" description="经典设计模式的动画可视化演示，展示对象创建、结构组合与行为交互过程">
+  <section class="max-w-5xl mx-auto px-6 pt-16 pb-8">
+    <div class="space-y-3 mb-10">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent-dark dark:text-accent text-sm font-medium">
+        <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
+        动画演示 · 代码同步 · 纯前端
+      </div>
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">设计模式演示</h1>
+      <p class="text-gray-600 dark:text-slate-400 max-w-2xl">
+        通过动画展示对象之间的创建、组合与交互关系，代码行同步高亮当前执行步骤。
+        目前共 <strong class="text-accent-dark dark:text-accent">{allPatterns.length}</strong> 个经典模式。
+      </p>
+    </div>
+  </section>
+
+  <section class="max-w-5xl mx-auto px-6 pb-20">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {allPatterns.map((pattern) => (
+        <a
+          href={`/design-patterns/${pattern.id}`}
+          class="group block p-5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 hover:border-accent/50 dark:hover:border-accent/50 hover:shadow-md transition-all"
+        >
+          <div class="flex items-start justify-between mb-3">
+            <span class="text-3xl">{pattern.icon}</span>
+            <span class={`text-xs px-2 py-0.5 rounded-full border ${categoryColors[pattern.category]}`}>
+              {categories[pattern.category]}
+            </span>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white group-hover:text-accent-dark dark:group-hover:text-accent transition-colors mb-2">
+            {pattern.name}
+          </h3>
+          <p class="text-sm text-gray-600 dark:text-slate-400 mb-3 line-clamp-2">
+            {pattern.desc}
+          </p>
+          <div class="text-xs text-gray-500 dark:text-slate-500">
+            场景：{pattern.scenario}
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

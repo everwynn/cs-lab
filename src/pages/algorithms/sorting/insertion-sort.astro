@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SortingVisualizer from '../../../components/algorithms/SortingVisualizer.vue';
+---
+<BaseLayout title="插入排序动画演示 - Demo Center" description="插入排序算法动画演示，逐步骤可视化元素后移和插入过程，Java 代码同步高亮">
+  <article class="max-w-5xl mx-auto px-6 py-10">
+    <a href="/algorithms" class="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-slate-400 hover:text-accent-dark dark:hover:text-accent transition-colors mb-6">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      返回算法列表
+    </a>
+    <header class="mb-8">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-3xl">🃏</span>
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">排序</span>
+            <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800">稳定</span>
+            <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800">O(n²)</span>
+          </div>
+          <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">插入排序 (Insertion Sort)</h1>
+        </div>
+      </div>
+      <p class="text-gray-600 dark:text-slate-400 max-w-3xl leading-relaxed">
+        类似整理扑克牌的方式：将每个元素插入到已排序部分的正确位置。对于近乎有序的数组，性能接近 O(n)，是简单排序算法中最高效的。
+      </p>
+      <div class="flex flex-wrap gap-2 mt-4">
+        {['扑克牌式插入', '元素后移', '原地排序', '稳定排序', '近乎有序最优'].map(s => (
+          <span class="px-3 py-1 text-xs rounded-full bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 border border-gray-200 dark:border-slate-700">{s}</span>
+        ))}
+      </div>
+    </header>
+    <SortingVisualizer client:load algorithm="insertion" initialArray={[12, 11, 13, 5, 6, 7, 3, 1, 9, 8]} />
+    <section class="mt-12 space-y-6">
+      <h2 class="text-xl font-bold text-gray-900 dark:text-white">算法详解</h2>
+      <div class="p-5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 space-y-3">
+        <h3 class="text-sm font-bold text-gray-900 dark:text-white">核心思想</h3>
+        <p class="text-sm text-gray-600 dark:text-slate-400 leading-relaxed">
+          将数组分为已排序和未排序两部分。每次取出未排序部分的第一个元素（key），与已排序部分从右向左比较，
+          将比 key 大的元素逐个后移，直到找到 key 的正确位置并插入。紫色柱子表示当前待插入的 key 元素。
+        </p>
+      </div>
+      <div class="p-5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 space-y-3">
+        <h3 class="text-sm font-bold text-gray-900 dark:text-white">复杂度分析</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-gray-600 dark:text-slate-400">
+            <thead>
+              <tr class="border-b border-gray-200 dark:border-slate-700">
+                <th class="text-left py-2 pr-4 font-medium">场景</th>
+                <th class="text-left py-2 pr-4 font-medium">时间复杂度</th>
+                <th class="text-left py-2 font-medium">说明</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-slate-800">
+              <tr><td class="py-2 pr-4">最优（已有序）</td><td class="py-2 pr-4 font-mono text-green-600 dark:text-green-400">O(n)</td><td class="py-2 text-xs">每个元素只需一次比较，无需后移</td></tr>
+              <tr><td class="py-2 pr-4">平均</td><td class="py-2 pr-4 font-mono text-amber-600 dark:text-amber-400">O(n²)</td><td class="py-2 text-xs">约 n²/4 次比较和移动</td></tr>
+              <tr><td class="py-2 pr-4">最差（逆序）</td><td class="py-2 pr-4 font-mono text-red-500 dark:text-red-400">O(n²)</td><td class="py-2 text-xs">每次插入都需要移动所有已排序元素</td></tr>
+              <tr><td class="py-2 pr-4">空间</td><td class="py-2 pr-4 font-mono text-blue-600 dark:text-blue-400">O(1)</td><td class="py-2 text-xs">原地排序</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </article>
+</BaseLayout>

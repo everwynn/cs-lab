@@ -1,0 +1,85 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AlgorithmFilter from '../../components/algorithms/AlgorithmFilter.vue';
+
+const categories = [
+  {
+    name: '排序算法',
+    icon: '🔀',
+    description: '可视化展示各种排序算法的执行过程，理解比较与交换的原理',
+    algorithms: [
+      { name: '冒泡排序', slug: 'sorting/bubble-sort', complexity: 'O(n²)', stable: true, available: true, desc: '相邻比较，逐步冒泡最大值到末尾' },
+      { name: '选择排序', slug: 'sorting/selection-sort', complexity: 'O(n²)', stable: false, available: true, desc: '每轮选出最小值放到已排序末尾' },
+      { name: '插入排序', slug: 'sorting/insertion-sort', complexity: 'O(n²)', stable: true, available: true, desc: '逐个插入到已排序序列的正确位置' },
+      { name: '快速排序', slug: 'sorting/quick-sort', complexity: 'O(n log n)', stable: false, available: true, desc: '分治法，选取基准元素分区排序' },
+      { name: '归并排序', slug: 'sorting/merge-sort', complexity: 'O(n log n)', stable: true, available: true, desc: '分治法，合并两个有序子序列' },
+      { name: '堆排序', slug: 'sorting/heap-sort', complexity: 'O(n log n)', stable: false, available: true, desc: '利用堆数据结构进行排序' },
+      { name: '希尔排序', slug: 'sorting/shell-sort', complexity: 'O(n^1.3)', stable: false, available: true, desc: '按增量分组进行插入排序' },
+      { name: '计数排序', slug: 'sorting/counting-sort', complexity: 'O(n+k)', stable: true, available: true, desc: '非比较排序，适用于整数范围已知' },
+    ],
+  },
+  {
+    name: '搜索算法',
+    icon: '🔍',
+    description: '在数据结构中查找目标元素的各种算法',
+    algorithms: [
+      { name: '线性查找', slug: 'searching/linear-search', complexity: 'O(n)', available: true, requiresSorted: false, desc: '逐个遍历比较查找' },
+      { name: '二分查找', slug: 'searching/binary-search', complexity: 'O(log n)', available: true, requiresSorted: true, desc: '在有序数组中折半查找' },
+      { name: '哈希查找', slug: 'searching/hash-search', complexity: 'O(1)', available: true, requiresSorted: false, desc: '利用哈希表实现 O(1) 查找' },
+    ],
+  },
+  {
+    name: '图论算法',
+    icon: '🕸️',
+    description: '图的遍历、最短路径、最小生成树等经典算法',
+    algorithms: [
+      { name: '广度优先搜索 (BFS)', slug: 'graph/bfs', complexity: 'O(V+E)', available: true, weighted: false, directed: false, desc: '逐层遍历图的节点' },
+      { name: '深度优先搜索 (DFS)', slug: 'graph/dfs', complexity: 'O(V+E)', available: true, weighted: false, directed: false, desc: '沿分支深入遍历图的节点' },
+      { name: 'Dijkstra 最短路径', slug: 'graph/dijkstra', complexity: 'O(V²)', available: true, weighted: true, directed: false, desc: '单源最短路径算法' },
+    ],
+  },
+  {
+    name: '动态规划',
+    icon: '📐',
+    description: '通过状态转移方程逐步求解最优解，展示 DP 表格填充过程',
+    algorithms: [
+      { name: '斐波那契（记忆化）', slug: 'dp/fibonacci', complexity: 'O(n)', available: true, desc: '一维 DP 表格，展示递归→记忆化的优化过程' },
+      { name: '0/1 背包', slug: 'dp/knapsack', complexity: 'O(nW)', available: true, desc: '二维 DP 表格，展示选/不选物品的决策过程' },
+      { name: '最长公共子序列 (LCS)', slug: 'dp/lcs', complexity: 'O(mn)', available: true, desc: '二维 DP 表格 + 回溯路径，找出最长公共子序列' },
+    ],
+  },
+  {
+    name: '回溯法',
+    icon: '🔙',
+    description: 'DFS + 剪枝，系统搜索解空间，冲突时自动回退',
+    algorithms: [
+      { name: 'N 皇后（4 皇后）', slug: 'backtracking/n-queens', complexity: 'O(n!)', available: true, desc: '4×4 棋盘放置皇后，冲突回溯' },
+      { name: '数独求解（4×4）', slug: 'backtracking/sudoku', complexity: 'O(n^(n²))', available: true, desc: '4×4 数独逐格填入，冲突回溯' },
+    ],
+  },
+]
+
+const availableCount = categories.reduce((sum, cat) => sum + cat.algorithms.filter(a => a.available).length, 0)
+const totalCount = categories.reduce((sum, cat) => sum + cat.algorithms.length, 0)
+---
+
+<BaseLayout title="算法可视化 - Demo Center" description="排序、搜索、图论等经典算法的动画可视化演示，逐步骤展示算法执行过程，Java 代码同步高亮">
+  <section class="max-w-5xl mx-auto px-6 pt-16 pb-8">
+    <div class="space-y-3 mb-10">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent-dark dark:text-accent text-sm font-medium">
+        <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
+        动画演示 · 代码同步 · 纯前端
+      </div>
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">算法可视化演示</h1>
+      <p class="text-gray-600 dark:text-slate-400 max-w-2xl">
+        通过动画逐步展示算法执行过程，数据状态可视化，代码行同步高亮当前执行步骤。
+        目前共 <strong class="text-accent-dark dark:text-accent">{availableCount}</strong> 个算法可用，
+        <strong class="text-gray-500 dark:text-slate-500">{totalCount - availableCount}</strong> 个正在开发中。
+      </p>
+    </div>
+  </section>
+
+  <section class="max-w-5xl mx-auto px-6 pb-20">
+    <AlgorithmFilter client:load categories={categories} />
+  </section>
+</BaseLayout>

@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SortingVisualizer from '../../../components/algorithms/SortingVisualizer.vue';
+---
+<BaseLayout title="归并排序动画演示 - Demo Center" description="归并排序算法动画演示，分治法拆分合并，Java 代码同步高亮">
+  <article class="max-w-5xl mx-auto px-6 py-10">
+    <a href="/algorithms" class="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-slate-400 hover:text-accent-dark dark:hover:text-accent transition-colors mb-6">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      返回算法列表
+    </a>
+    <header class="mb-8">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-3xl">🔗</span>
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">排序</span>
+            <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800">稳定</span>
+            <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">O(n log n)</span>
+          </div>
+          <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">归并排序 (Merge Sort)</h1>
+        </div>
+      </div>
+      <p class="text-gray-600 dark:text-slate-400 max-w-3xl leading-relaxed">
+        采用分治法：将数组递归地拆分为两半，分别排序后合并。时间复杂度稳定为 O(n log n)，且是稳定排序，但需要 O(n) 额外空间。
+      </p>
+      <div class="flex flex-wrap gap-2 mt-4">
+        {['分治法', '拆分合并', '稳定排序', '需要额外空间', '最差也是 O(n log n)'].map(s => (
+          <span class="px-3 py-1 text-xs rounded-full bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 border border-gray-200 dark:border-slate-700">{s}</span>
+        ))}
+      </div>
+    </header>
+    <SortingVisualizer client:load algorithm="merge" initialArray={[38, 27, 43, 3, 9, 82, 10, 15]} />
+    <section class="mt-12 space-y-6">
+      <h2 class="text-xl font-bold text-gray-900 dark:text-white">算法详解</h2>
+      <div class="p-5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 space-y-3">
+        <h3 class="text-sm font-bold text-gray-900 dark:text-white">核心思想</h3>
+        <p class="text-sm text-gray-600 dark:text-slate-400 leading-relaxed">
+          归并排序分两步：① 拆分 — 递归地将数组从中间一分为二，直到每个子数组只有一个元素；
+          ② 合并 — 将两个有序子数组合并为一个有序数组。合并时比较两个子数组的首元素，较小者放入临时数组，最后回写到原数组。
+        </p>
+      </div>
+      <div class="p-5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 space-y-3">
+        <h3 class="text-sm font-bold text-gray-900 dark:text-white">复杂度分析</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-gray-600 dark:text-slate-400">
+            <thead>
+              <tr class="border-b border-gray-200 dark:border-slate-700">
+                <th class="text-left py-2 pr-4 font-medium">场景</th>
+                <th class="text-left py-2 pr-4 font-medium">时间复杂度</th>
+                <th class="text-left py-2 font-medium">说明</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-slate-800">
+              <tr><td class="py-2 pr-4">最优</td><td class="py-2 pr-4 font-mono text-green-600 dark:text-green-400">O(n log n)</td><td class="py-2 text-xs">无论输入如何，始终 log n 层递归</td></tr>
+              <tr><td class="py-2 pr-4">平均</td><td class="py-2 pr-4 font-mono text-amber-600 dark:text-amber-400">O(n log n)</td><td class="py-2 text-xs">每层合并 O(n)，共 log n 层</td></tr>
+              <tr><td class="py-2 pr-4">最差</td><td class="py-2 pr-4 font-mono text-red-500 dark:text-red-400">O(n log n)</td><td class="py-2 text-xs">最差情况也是 O(n log n)，性能稳定</td></tr>
+              <tr><td class="py-2 pr-4">空间</td><td class="py-2 pr-4 font-mono text-blue-600 dark:text-blue-400">O(n)</td><td class="py-2 text-xs">需要临时数组存储合并结果</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </article>
+</BaseLayout>

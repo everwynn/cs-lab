@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import GraphVisualizer from '../../../components/algorithms/GraphVisualizer.vue';
+---
+
+<BaseLayout title="Dijkstra 最短路径动画演示 - Demo Center" description="Dijkstra 算法可视化演示：在带权图中计算单源最短路径，Java 代码同步高亮">
+  <article class="max-w-5xl mx-auto px-6 py-10">
+    <a href="/algorithms" class="inline-flex items-center gap-1 text-sm text-accent-dark dark:text-accent hover:underline mb-6">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      返回算法列表
+    </a>
+
+    <header class="mb-8">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-3xl">🛤️</span>
+        <div>
+          <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">Dijkstra 最短路径</h1>
+          <p class="text-gray-500 dark:text-slate-400 mt-1">带权图单源最短路径，贪心 + 松弛</p>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-2 mt-4">
+        <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400">O(V²)</span>
+        <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">O(V) 空间</span>
+        <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400">带权图 · 无负权</span>
+      </div>
+    </header>
+
+    <GraphVisualizer client:load algorithm="dijkstra" />
+
+    <section class="mt-12 space-y-6">
+      <div class="p-6 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-3">核心思想</h2>
+        <p class="text-gray-600 dark:text-slate-400 leading-relaxed">
+          维护一个距离数组 <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-slate-800 font-mono text-sm">dist</code>，记录起点到每个节点的当前最短距离。每次选择未访问节点中距离最小的一个，用它更新（松弛）所有邻居的距离。重复直到所有节点都被访问。
+        </p>
+      </div>
+
+      <div class="p-6 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">复杂度分析</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left">
+            <thead class="text-xs text-gray-500 dark:text-slate-400 uppercase bg-gray-50 dark:bg-slate-800/50">
+              <tr>
+                <th class="px-4 py-2 rounded-l-lg">情况</th>
+                <th class="px-4 py-2">时间复杂度</th>
+                <th class="px-4 py-2 rounded-r-lg">说明</th>
+              </tr>
+            </thead>
+            <tbody class="text-gray-700 dark:text-slate-300">
+              <tr class="border-b border-gray-100 dark:border-slate-800">
+                <td class="px-4 py-3">数组实现</td>
+                <td class="px-4 py-3 font-mono font-bold text-amber-600 dark:text-amber-400">O(V²)</td>
+                <td class="px-4 py-3">每次线性查找最小距离节点</td>
+              </tr>
+              <tr class="border-b border-gray-100 dark:border-slate-800">
+                <td class="px-4 py-3">优先队列实现</td>
+                <td class="px-4 py-3 font-mono font-bold text-green-600 dark:text-green-400">O((V+E) log V)</td>
+                <td class="px-4 py-3">使用最小堆优化取最小节点</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3">空间</td>
+                <td class="px-4 py-3 font-mono font-bold text-blue-600 dark:text-blue-400">O(V)</td>
+                <td class="px-4 py-3">距离数组和访问集合</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="p-6 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-3">使用条件</h2>
+        <ul class="list-disc list-inside text-gray-600 dark:text-slate-400 space-y-1">
+          <li>图中边权必须<strong>非负</strong>（有负权边会失效）</li>
+          <li>适合稠密图或边权变化小的场景</li>
+          <li>有负权边时改用 Bellman-Ford 或 SPFA</li>
+        </ul>
+      </div>
+    </section>
+  </article>
+</BaseLayout>

@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DataStructureVisualizer from '../../components/dataStructures/DataStructureVisualizer.vue';
+import { linkedListDS } from '../../components/dataStructures/dataStructureDefinitions';
+
+const ds = linkedListDS;
+---
+
+<BaseLayout title={`${ds.name} - 数据结构演示`} description={ds.desc}>
+  <section class="max-w-6xl mx-auto px-6 py-12">
+    <a href="/data-structures" class="inline-flex items-center gap-1 text-sm text-gray-500 dark:text-slate-400 hover:text-accent-dark dark:hover:text-accent mb-6 transition-colors">
+      ← 返回数据结构列表
+    </a>
+    <DataStructureVisualizer client:load dataStructureId={ds.id} />
+  </section>
+</BaseLayout>

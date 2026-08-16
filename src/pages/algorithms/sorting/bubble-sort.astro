@@ -1,0 +1,109 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SortingVisualizer from '../../../components/algorithms/SortingVisualizer.vue';
+---
+<BaseLayout title="冒泡排序动画演示 - Demo Center" description="冒泡排序算法动画演示，逐步骤可视化比较和交换过程，Java 代码同步高亮，支持播放/暂停/步进/调速">
+  <article class="max-w-5xl mx-auto px-6 py-10">
+    <a href="/algorithms" class="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-slate-400 hover:text-accent-dark dark:hover:text-accent transition-colors mb-6">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      返回算法列表
+    </a>
+
+    <header class="mb-8">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-3xl">🫧</span>
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">排序</span>
+            <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800">稳定</span>
+            <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800">O(n²)</span>
+          </div>
+          <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">冒泡排序 (Bubble Sort)</h1>
+        </div>
+      </div>
+      <p class="text-gray-600 dark:text-slate-400 max-w-3xl leading-relaxed">
+        冒泡排序是最经典的排序算法之一。它重复地遍历数组，每次比较相邻的两个元素，如果顺序错误就交换它们。
+        每轮遍历会将当前未排序部分的最大值「冒泡」到末尾，就像水中的气泡浮上水面。
+      </p>
+      <div class="flex flex-wrap gap-2 mt-4">
+        {['相邻比较', '逐轮冒泡', '原地排序', '稳定排序', '入门算法'].map(s => (
+          <span class="px-3 py-1 text-xs rounded-full bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 border border-gray-200 dark:border-slate-700">{s}</span>
+        ))}
+      </div>
+    </header>
+
+    <!-- 算法演示 -->
+    <SortingVisualizer client:load algorithm="bubble" initialArray={[5, 3, 8, 1, 9, 2, 7, 4, 6]} />
+
+    <!-- 算法详解 -->
+    <section class="mt-12 space-y-6">
+      <h2 class="text-xl font-bold text-gray-900 dark:text-white">算法详解</h2>
+
+      <div class="p-5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 space-y-3">
+        <h3 class="text-sm font-bold text-gray-900 dark:text-white">核心思想</h3>
+        <p class="text-sm text-gray-600 dark:text-slate-400 leading-relaxed">
+          每轮从头到尾比较相邻元素，如果前一个比后一个大，就交换它们。这样一轮下来，最大的元素就到了最后。
+          下一轮只需要比较前面的 <code class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-slate-800 text-accent font-mono text-xs">n-1-i</code> 个元素，以此类推。
+        </p>
+      </div>
+
+      <div class="p-5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 space-y-3">
+        <h3 class="text-sm font-bold text-gray-900 dark:text-white">执行流程</h3>
+        <ol class="text-sm text-gray-600 dark:text-slate-400 space-y-2 list-decimal list-inside">
+          <li>外层循环 <code class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-slate-800 text-accent font-mono text-xs">i</code> 从 0 到 <code class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-slate-800 text-accent font-mono text-xs">n-2</code>，控制比较轮数</li>
+          <li>内层循环 <code class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-slate-800 text-accent font-mono text-xs">j</code> 从 0 到 <code class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-slate-800 text-accent font-mono text-xs">n-2-i</code>，比较相邻元素</li>
+          <li>若 <code class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-slate-800 text-accent font-mono text-xs">arr[j] > arr[j+1]</code>，交换两个元素</li>
+          <li>每轮结束后，末尾 <code class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-slate-800 text-accent font-mono text-xs">i+1</code> 个元素已有序</li>
+          <li>共 <code class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-slate-800 text-accent font-mono text-xs">n-1</code> 轮后排序完成</li>
+        </ol>
+      </div>
+
+      <div class="p-5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 space-y-3">
+        <h3 class="text-sm font-bold text-gray-900 dark:text-white">复杂度分析</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-gray-600 dark:text-slate-400">
+            <thead>
+              <tr class="border-b border-gray-200 dark:border-slate-700">
+                <th class="text-left py-2 pr-4 font-medium">场景</th>
+                <th class="text-left py-2 pr-4 font-medium">时间复杂度</th>
+                <th class="text-left py-2 font-medium">说明</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-slate-800">
+              <tr>
+                <td class="py-2 pr-4">最优（已有序）</td>
+                <td class="py-2 pr-4 font-mono text-green-600 dark:text-green-400">O(n)</td>
+                <td class="py-2 text-xs">只需一轮比较，无交换发生</td>
+              </tr>
+              <tr>
+                <td class="py-2 pr-4">平均</td>
+                <td class="py-2 pr-4 font-mono text-amber-600 dark:text-amber-400">O(n²)</td>
+                <td class="py-2 text-xs">约 n²/2 次比较和 n²/4 次交换</td>
+              </tr>
+              <tr>
+                <td class="py-2 pr-4">最差（逆序）</td>
+                <td class="py-2 pr-4 font-mono text-red-500 dark:text-red-400">O(n²)</td>
+                <td class="py-2 text-xs">每次比较都需要交换</td>
+              </tr>
+              <tr>
+                <td class="py-2 pr-4">空间</td>
+                <td class="py-2 pr-4 font-mono text-blue-600 dark:text-blue-400">O(1)</td>
+                <td class="py-2 text-xs">原地排序，仅需一个 temp 变量</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="p-5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 space-y-3">
+        <h3 class="text-sm font-bold text-gray-900 dark:text-white">适用场景</h3>
+        <ul class="text-sm text-gray-600 dark:text-slate-400 space-y-1.5 list-disc list-inside">
+          <li>教学演示：最直观的排序算法，适合入门学习</li>
+          <li>小规模数据：数据量 < 20 时实现简单，性能可接受</li>
+          <li>近乎有序的数据：最优情况 O(n)，优于其他 O(n²) 算法</li>
+          <li>不适用于大规模数据：O(n²) 时间复杂度性能较差</li>
+        </ul>
+      </div>
+    </section>
+  </article>
+</BaseLayout>
