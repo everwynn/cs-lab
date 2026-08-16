@@ -7,9 +7,9 @@ import mdx from '@astrojs/mdx';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://everwynn.github.io/cs-lab/', // 学习站独立域名
+  site: 'https://everwynn.github.io/', // 学习站独立域名
   // 仓库名
-  base: '',
+  base: '/cs-lab/',
   trailingSlash: 'always', // 处理GitHub Pages子路径路由404
 
   integrations: [
