@@ -25,15 +25,9 @@ export default function fixBaseLinks(basePath) {
                             // 只替换以 / 开头、不是http:// https:// # 的链接
                             // html = html.replaceAll(/(href|src)="(\/(?!\/|http|#)[^"]+)"/g, `$1="${base}$2"`);
 
-                            // // HTML：只替换业务跳转链接，排除 _astro assets http # //
-                            // html = html.replaceAll(
-                            //     /(href)="(\/(?!\/|http|#|_astro\/|assets\/)[^"]+)"/g,
-                            //     `$1="${base}$2"`
-                            // );
-
-                            // 直接排除以 /_astro/ /assets/ 开头的资源链接
+                            // HTML：只替换业务跳转链接，排除 _astro assets http # //
                             html = html.replaceAll(
-                                /(href|src)="(\/(?!(?:_astro\/|assets\/|\/|http|#))[^"]+)"/g,
+                                /(href)="(\/(?!\/|http|#|_astro\/|assets\/)[^"]+)"/g,
                                 `$1="${base}$2"`
                             );
                             fs.writeFileSync(fullPath, html, 'utf8');
@@ -49,6 +43,13 @@ export default function fixBaseLinks(basePath) {
                             );
                             console.log('content: ' + content);
                             fs.writeFileSync(fullPath, content, 'utf8');
+                        } else if (entry.name.endsWith('.css')) {
+                            let cssText = fs.readFileSync(fullPath, 'utf8');
+                            const doubleBase = `${base}${base}`;
+                            while(cssText.includes(doubleBase)){
+                                cssText = cssText.replaceAll(doubleBase, base);
+                            }
+                            fs.writeFileSync(fullPath, cssText, 'utf8');
                         }
                     }
                 }
