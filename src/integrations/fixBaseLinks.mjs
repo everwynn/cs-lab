@@ -23,13 +23,23 @@ export default function fixBaseLinks(basePath) {
                         } else if (entry.name.endsWith('.html')) {
                             let html = fs.readFileSync(fullPath, 'utf8');
                             // 只替换以 / 开头、不是http:// https:// # 的链接
-                            html = html.replaceAll(/(href|src)="(\/(?!\/|http|#)[^"]+)"/g, `$1="${base}$2"`);
+                            // html = html.replaceAll(/(href|src)="(\/(?!\/|http|#)[^"]+)"/g, `$1="${base}$2"`);
+                            // HTML：只替换业务跳转链接，排除 _astro assets http # //
+                            html = html.replaceAll(
+                                /(href)="(\/(?!\/|http|#|_astro\/|assets\/)[^"]+)"/g,
+                                `$1="${base}$2"`
+                            );
                             fs.writeFileSync(fullPath, html, 'utf8');
                         } else if (entry.name.endsWith('.js')) {
                             console.log('entry.name: ' + entry.name);
                             let content = fs.readFileSync(fullPath, 'utf8');
-                            // 替换js源码字符串内的 /_astro/xxx
-                            content = content.replaceAll(/"(\/_astro\/[^"]+)"/g, `"${base}$1"`);
+                            // // 替换js源码字符串内的 /_astro/xxx
+                            // content = content.replaceAll(/"(\/_astro\/[^"]+)"/g, `"${base}$1"`);
+                            // 只匹配''后面直接跟 /_astro/，前面没有 base(/cs‑lab)
+                            content = content.replaceAll(
+                                new RegExp(`"((?!${base})\\/_astro\\/[^"]+)"`, 'g'),
+                                `"${base}$1"`
+                            );
                             console.log('content: ' + content);
                             fs.writeFileSync(fullPath, content, 'utf8');
                         }
