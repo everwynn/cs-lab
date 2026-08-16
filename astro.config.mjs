@@ -6,9 +6,9 @@ import mdx from '@astrojs/mdx';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://everwynn.github.io', // 学习站独立域名
+  site: 'https://everwynn.github.io/cs-lab/', // 学习站独立域名
   // 仓库名
-  base: '/cs-lab/',
+  // base: '/cs-lab/',
 
   integrations: [
     vue(),
