@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 import vue from '@astrojs/vue';
 import tailwind from '@astrojs/tailwind';
 import mdx from '@astrojs/mdx';
-// import fixBaseLinks from './src/integrations/fixBaseLinks.mjs';
+import fixBaseLinks from './src/integrations/fixBaseLinks.mjs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -16,7 +16,7 @@ export default defineConfig({
     vue(),
     tailwind(),
     mdx(),
-    // fixBaseLinks('/cs-lab/') // 传入base路径
+    fixBaseLinks('/cs-lab/') // 自动追加base前缀到内部链接
   ],
 
   output: 'static',

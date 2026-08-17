@@ -1,5 +1,4 @@
 ---
-const baseUrl = import.meta.env.BASE_URL;
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import GitVisualizer from '../../components/git/GitVisualizer.vue';
 import { allGitTopics } from '../../components/git/gitDefinitions';
@@ -9,7 +8,7 @@ const topic = allGitTopics.find(t => t.id === 'gitflow')!;
 
 <BaseLayout title={`${topic.name} - Git 工作流可视化`} description={topic.desc}>
   <section class="max-w-6xl mx-auto px-6 py-12">
-    <a href="${baseUrl}git-workflow" class="inline-flex items-center gap-1 text-sm text-gray-500 dark:text-slate-400 hover:text-accent-dark dark:hover:text-accent mb-6 transition-colors">
+    <a href="/git-workflow" class="inline-flex items-center gap-1 text-sm text-gray-500 dark:text-slate-400 hover:text-accent-dark dark:hover:text-accent mb-6 transition-colors">
       ← 返回 Git 工作流列表
     </a>
     <div class="mb-6">

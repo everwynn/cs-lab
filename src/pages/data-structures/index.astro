@@ -2,8 +2,6 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { allDataStructures } from '../../components/dataStructures/dataStructureDefinitions';
 
-const baseUrl = import.meta.env.BASE_URL;
-
 const categories: Record<string, string> = {
   linear: '线性',
   linked: '链式',
@@ -38,7 +36,7 @@ const categoryColors: Record<string, string> = {
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
       {allDataStructures.map((ds) => (
         <a
-          href={`${baseUrl}data-structures/${ds.id}`}
+          href={`/data-structures/${ds.id}`}
           class="group block p-5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 hover:border-accent/50 dark:hover:border-accent/50 hover:shadow-md transition-all"
         >
           <div class="flex items-start justify-between mb-3">

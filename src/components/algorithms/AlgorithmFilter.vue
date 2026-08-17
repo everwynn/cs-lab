@@ -24,7 +24,6 @@ interface Category {
 
 const props = defineProps<{
   categories: Category[]
-  baseUrl: string
 }>()
 
 const search = ref('')
@@ -107,7 +106,7 @@ function badgeClass(algo: Algorithm, catName: string): string {
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <a v-for="algo in cat.algorithms" :key="algo.slug" :href="algo.available ? (props.baseUrl + '/algorithms/' + algo.slug) : '#'"
+        <a v-for="algo in cat.algorithms" :key="algo.slug" :href="algo.available ? ('/algorithms/' + algo.slug) : '#'"
           :class="['block p-5 rounded-xl border transition-all', algo.available
             ? 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 hover:border-accent/50 hover:shadow-md'
             : 'border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-900/20 opacity-60 cursor-not-allowed']">

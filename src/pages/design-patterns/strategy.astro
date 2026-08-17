@@ -1,5 +1,4 @@
 ---
-const baseUrl = import.meta.env.BASE_URL;
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import DesignPatternVisualizer from '../../components/designPatterns/DesignPatternVisualizer.vue';
 import { strategyPattern } from '../../components/designPatterns/patternDefinitions';
@@ -9,7 +8,7 @@ const pattern = strategyPattern;
 
 <BaseLayout title={`${pattern.name} - 设计模式演示`} description={pattern.desc}>
   <section class="max-w-6xl mx-auto px-6 py-12">
-    <a href="${baseUrl}design-patterns" class="inline-flex items-center gap-1 text-sm text-gray-500 dark:text-slate-400 hover:text-accent-dark dark:hover:text-accent mb-6 transition-colors">
+    <a href="/design-patterns" class="inline-flex items-center gap-1 text-sm text-gray-500 dark:text-slate-400 hover:text-accent-dark dark:hover:text-accent mb-6 transition-colors">
       ← 返回设计模式列表
     </a>
     <DesignPatternVisualizer client:load patternId={pattern.id} />

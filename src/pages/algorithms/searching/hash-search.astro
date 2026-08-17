@@ -1,12 +1,11 @@
 ---
-const baseUrl = import.meta.env.BASE_URL;
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import SearchVisualizer from '../../../components/algorithms/SearchVisualizer.vue';
 ---
 
 <BaseLayout title="哈希查找动画演示 - Demo Center" description="哈希查找算法可视化演示：通过哈希函数定位桶，再用拉链法处理冲突，Java 代码同步高亮">
   <article class="max-w-5xl mx-auto px-6 py-10">
-    <a href="${baseUrl}algorithms" class="inline-flex items-center gap-1 text-sm text-accent-dark dark:text-accent hover:underline mb-6">
+    <a href="/algorithms" class="inline-flex items-center gap-1 text-sm text-accent-dark dark:text-accent hover:underline mb-6">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
       返回算法列表
     </a>

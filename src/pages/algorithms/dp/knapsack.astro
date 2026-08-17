@@ -1,5 +1,4 @@
 ---
-const baseUrl = import.meta.env.BASE_URL;
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import DpVisualizer from '../../../components/algorithms/DpVisualizer.vue';
 
@@ -9,7 +8,7 @@ const algoDesc = '在背包容量限制下，选择物品使总价值最大。�
 
 <BaseLayout title={`${algoName} - 算法可视化演示`} description={algoDesc}>
   <section class="max-w-6xl mx-auto px-6 py-12">
-    <a href="${baseUrl}algorithms" class="inline-flex items-center gap-1 text-sm text-gray-500 dark:text-slate-400 hover:text-accent-dark dark:hover:text-accent mb-6 transition-colors">
+    <a href="/algorithms" class="inline-flex items-center gap-1 text-sm text-gray-500 dark:text-slate-400 hover:text-accent-dark dark:hover:text-accent mb-6 transition-colors">
       ← 返回算法列表
     </a>
     <div class="mb-6">

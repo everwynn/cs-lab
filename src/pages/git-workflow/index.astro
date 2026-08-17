@@ -1,8 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { allGitTopics } from '../../components/git/gitDefinitions';
-
-const baseUrl = import.meta.env.BASE_URL;
 ---
 
 <BaseLayout title="Git 工作流可视化 - Demo Center" description="Git 分支、合并、Rebase、冲突解决、Git Flow 的动画可视化演示">
@@ -24,7 +22,7 @@ const baseUrl = import.meta.env.BASE_URL;
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
       {allGitTopics.map((topic) => (
         <a
-          href={`${baseUrl}git-workflow/${topic.id}`}
+          href={`/git-workflow/${topic.id}`}
           class="group block p-5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 hover:border-accent/50 dark:hover:border-accent/50 hover:shadow-md transition-all"
         >
           <div class="flex items-start justify-between mb-3">
