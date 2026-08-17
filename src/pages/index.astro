@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+const baseUrl = import.meta.env.BASE_URL;
 ---
 
 <BaseLayout title="CS Lab - 计算机基础可视化学习平台">
@@ -26,7 +28,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   <section class="max-w-6xl mx-auto px-6 pb-20">
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
       <!-- 算法可视化 -->
-      <a href="/algorithms" class="group p-6 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 hover:border-accent/50 hover:shadow-lg transition-all">
+      <a href="${baseUrl}algorithms" class="group p-6 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 hover:border-accent/50 hover:shadow-lg transition-all">
         <div class="flex items-center gap-4">
           <div class="w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-2xl">🫧</div>
           <div class="flex-1">
@@ -37,7 +39,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </div>
       </a>
       <!-- 数据结构 -->
-      <a href="/data-structures" class="group p-6 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 hover:border-accent/50 hover:shadow-lg transition-all">
+      <a href="${baseUrl}data-structures" class="group p-6 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 hover:border-accent/50 hover:shadow-lg transition-all">
         <div class="flex items-center gap-4">
           <div class="w-12 h-12 rounded-xl bg-teal-50 dark:bg-teal-900/20 flex items-center justify-center text-2xl">📦</div>
           <div class="flex-1">
@@ -48,7 +50,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </div>
       </a>
       <!-- 设计模式 -->
-      <a href="/design-patterns" class="group p-6 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 hover:border-accent/50 hover:shadow-lg transition-all">
+      <a href="${baseUrl}design-patterns" class="group p-6 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 hover:border-accent/50 hover:shadow-lg transition-all">
         <div class="flex items-center gap-4">
           <div class="w-12 h-12 rounded-xl bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center text-2xl">🏗️</div>
           <div class="flex-1">
@@ -59,7 +61,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </div>
       </a>
       <!-- Git 工作流 -->
-      <a href="/git-workflow" class="group p-6 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 hover:border-accent/50 hover:shadow-lg transition-all">
+      <a href="${baseUrl}git-workflow" class="group p-6 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 hover:border-accent/50 hover:shadow-lg transition-all">
         <div class="flex items-center gap-4">
           <div class="w-12 h-12 rounded-xl bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center text-2xl">🌿</div>
           <div class="flex-1">
