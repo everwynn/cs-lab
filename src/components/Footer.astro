@@ -1,4 +1,6 @@
 ---
+import VisitCounter from './VisitCounter.astro';
+
 const year = new Date().getFullYear();
 
 const socialLinks = [
@@ -27,5 +29,8 @@ const socialLinks = [
         </a>
       ))}
     </div>
+  </div>
+  <div class="max-w-6xl mx-auto px-6 pb-6 text-xs text-gray-500 dark:text-slate-500">
+    <VisitCounter site="cs-lab" />
   </div>
 </footer>
