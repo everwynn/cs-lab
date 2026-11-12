@@ -1,0 +1,113 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { bPlusTreeDefinition } from '../../components/database/bPlusTreeDefinition';
+
+const topics = [
+  {
+    id: bPlusTreeDefinition.id,
+    name: bPlusTreeDefinition.name,
+    icon: bPlusTreeDefinition.icon,
+    desc: bPlusTreeDefinition.desc,
+    scenario: bPlusTreeDefinition.scenario,
+    status: 'ready' as const,
+  },
+  {
+    id: 'mvcc',
+    name: '事务隔离与 MVCC',
+    icon: '🔀',
+    desc: 'undo log 版本链、ReadView 与四种隔离级别，解释幻读是怎么被解决的。',
+    scenario: 'MySQL 事务、并发控制、面试高频',
+    status: 'planned' as const,
+  },
+  {
+    id: 'explain',
+    name: '执行计划拆解',
+    icon: '🧭',
+    desc: 'EXPLAIN 每一列怎么读，索引为什么失效，回表与覆盖索引的代价。',
+    scenario: 'SQL 调优、慢查询排查',
+    status: 'planned' as const,
+  },
+  {
+    id: 'raft',
+    name: 'Raft 选举与日志复制',
+    icon: '🗳️',
+    desc: 'Leader 选举、term 与心跳、日志提交，把共识算法拆成可播放的步骤。',
+    scenario: '分布式一致性、etcd / TiKV',
+    status: 'planned' as const,
+  },
+  {
+    id: 'consistent-hashing',
+    name: '一致性哈希',
+    icon: '🎯',
+    desc: '哈希环、虚拟节点与数据迁移量，解释扩容时为什么只动一小部分。',
+    scenario: '分布式缓存、分库分表',
+    status: 'planned' as const,
+  },
+];
+
+const readyCount = topics.filter((topic) => topic.status === 'ready').length;
+---
+
+<BaseLayout title="数据库与分布式 - Demo Center" description="数据库索引与分布式系统的动画可视化演示，代码行同步高亮">
+  <section class="max-w-5xl mx-auto px-6 pt-16 pb-8">
+    <div class="space-y-3 mb-10">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent-dark dark:text-accent text-sm font-medium">
+        <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
+        数据库 · 分布式 · 可视化
+      </div>
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">数据库与分布式</h1>
+      <p class="text-gray-600 dark:text-slate-400 max-w-2xl">
+        把面试与工作中最常被问到的数据库、分布式机制拆成可播放的步骤：
+        每一步都能看到结构怎么变、代码执行到哪一行。
+        目前已上线 <strong class="text-accent-dark dark:text-accent">{readyCount}</strong> 个主题，其余主题按顺序补充。
+      </p>
+    </div>
+  </section>
+
+  <section class="max-w-5xl mx-auto px-6 pb-20">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {topics.map((topic) =>
+        topic.status === 'ready' ? (
+          <a
+            href={`/database/${topic.id}`}
+            class="group block p-5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 hover:border-accent/50 dark:hover:border-accent/50 hover:shadow-md transition-all"
+          >
+            <div class="flex items-start justify-between mb-3">
+              <span class="text-3xl">{topic.icon}</span>
+              <span class="text-xs px-2 py-0.5 rounded-full border bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800">
+                已上线
+              </span>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white group-hover:text-accent-dark dark:group-hover:text-accent transition-colors mb-2">
+              {topic.name}
+            </h3>
+            <p class="text-sm text-gray-600 dark:text-slate-400 mb-3 line-clamp-2">
+              {topic.desc}
+            </p>
+            <div class="text-xs text-gray-500 dark:text-slate-500">
+              场景：{topic.scenario}
+            </div>
+          </a>
+        ) : (
+          <div class="block p-5 rounded-xl border border-dashed border-gray-200 dark:border-slate-700 bg-gray-50/60 dark:bg-slate-900/20">
+            <div class="flex items-start justify-between mb-3">
+              <span class="text-3xl opacity-60 grayscale">{topic.icon}</span>
+              <span class="text-xs px-2 py-0.5 rounded-full border border-gray-200 dark:border-slate-700 text-gray-400 dark:text-slate-500">
+                规划中
+              </span>
+            </div>
+            <h3 class="text-lg font-bold text-gray-500 dark:text-slate-400 mb-2">
+              {topic.name}
+            </h3>
+            <p class="text-sm text-gray-400 dark:text-slate-500 mb-3 line-clamp-2">
+              {topic.desc}
+            </p>
+            <div class="text-xs text-gray-400 dark:text-slate-600">
+              场景：{topic.scenario}
+            </div>
+          </div>
+        )
+      )}
+    </div>
+  </section>
+</BaseLayout>
