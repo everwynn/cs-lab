@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ConsistentHashingVisualizer from '../../components/database/ConsistentHashingVisualizer.vue';
+import { consistentHashingDefinition } from '../../components/database/consistentHashingDefinition';
+
+const topic = consistentHashingDefinition;
+---
+
+<BaseLayout title={`${topic.name} - 数据库与分布式`} description={topic.desc}>
+  <section class="max-w-6xl mx-auto px-6 py-12">
+    <a href="/database" class="inline-flex items-center gap-1 text-sm text-gray-500 dark:text-slate-400 hover:text-accent-dark dark:hover:text-accent mb-6 transition-colors">
+      ← 返回数据库与分布式列表
+    </a>
+    <ConsistentHashingVisualizer client:load />
+  </section>
+</BaseLayout>

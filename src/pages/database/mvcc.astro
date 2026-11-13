@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import MvccVisualizer from '../../components/database/MvccVisualizer.vue';
+import { mvccDefinition } from '../../components/database/mvccDefinition';
+
+const topic = mvccDefinition;
+---
+
+<BaseLayout title={`${topic.name} - 数据库与分布式`} description={topic.desc}>
+  <section class="max-w-6xl mx-auto px-6 py-12">
+    <a href="/database" class="inline-flex items-center gap-1 text-sm text-gray-500 dark:text-slate-400 hover:text-accent-dark dark:hover:text-accent mb-6 transition-colors">
+      ← 返回数据库与分布式列表
+    </a>
+    <MvccVisualizer client:load />
+  </section>
+</BaseLayout>

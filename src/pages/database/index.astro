@@ -1,6 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { bPlusTreeDefinition } from '../../components/database/bPlusTreeDefinition';
+import { mvccDefinition } from '../../components/database/mvccDefinition';
+import { consistentHashingDefinition } from '../../components/database/consistentHashingDefinition';
+import { lsmTreeDefinition } from '../../components/database/lsmTreeDefinition';
 
 const topics = [
   {
@@ -12,20 +15,28 @@ const topics = [
     status: 'ready' as const,
   },
   {
-    id: 'mvcc',
-    name: '事务隔离与 MVCC',
-    icon: '🔀',
-    desc: 'undo log 版本链、ReadView 与四种隔离级别，解释幻读是怎么被解决的。',
-    scenario: 'MySQL 事务、并发控制、面试高频',
-    status: 'planned' as const,
+    id: mvccDefinition.id,
+    name: mvccDefinition.name,
+    icon: mvccDefinition.icon,
+    desc: mvccDefinition.desc,
+    scenario: mvccDefinition.scenario,
+    status: 'ready' as const,
   },
   {
-    id: 'explain',
-    name: '执行计划拆解',
-    icon: '🧭',
-    desc: 'EXPLAIN 每一列怎么读，索引为什么失效，回表与覆盖索引的代价。',
-    scenario: 'SQL 调优、慢查询排查',
-    status: 'planned' as const,
+    id: consistentHashingDefinition.id,
+    name: consistentHashingDefinition.name,
+    icon: consistentHashingDefinition.icon,
+    desc: consistentHashingDefinition.desc,
+    scenario: consistentHashingDefinition.scenario,
+    status: 'ready' as const,
+  },
+  {
+    id: lsmTreeDefinition.id,
+    name: lsmTreeDefinition.name,
+    icon: lsmTreeDefinition.icon,
+    desc: lsmTreeDefinition.desc,
+    scenario: lsmTreeDefinition.scenario,
+    status: 'ready' as const,
   },
   {
     id: 'raft',
@@ -33,14 +44,6 @@ const topics = [
     icon: '🗳️',
     desc: 'Leader 选举、term 与心跳、日志提交，把共识算法拆成可播放的步骤。',
     scenario: '分布式一致性、etcd / TiKV',
-    status: 'planned' as const,
-  },
-  {
-    id: 'consistent-hashing',
-    name: '一致性哈希',
-    icon: '🎯',
-    desc: '哈希环、虚拟节点与数据迁移量，解释扩容时为什么只动一小部分。',
-    scenario: '分布式缓存、分库分表',
     status: 'planned' as const,
   },
 ];
