@@ -6,6 +6,9 @@ dist/
 # dependencies
 node_modules/
 
+# temp verification artifacts
+.tmp-*
+
 # logs
 npm-debug.log*
 yarn-debug.log*

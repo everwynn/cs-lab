@@ -4,6 +4,7 @@ import { bPlusTreeDefinition } from '../../components/database/bPlusTreeDefiniti
 import { mvccDefinition } from '../../components/database/mvccDefinition';
 import { consistentHashingDefinition } from '../../components/database/consistentHashingDefinition';
 import { lsmTreeDefinition } from '../../components/database/lsmTreeDefinition';
+import { raftDefinition } from '../../components/database/raftDefinition';
 
 const topics = [
   {
@@ -39,12 +40,12 @@ const topics = [
     status: 'ready' as const,
   },
   {
-    id: 'raft',
-    name: 'Raft 选举与日志复制',
-    icon: '🗳️',
-    desc: 'Leader 选举、term 与心跳、日志提交，把共识算法拆成可播放的步骤。',
-    scenario: '分布式一致性、etcd / TiKV',
-    status: 'planned' as const,
+    id: raftDefinition.id,
+    name: raftDefinition.name,
+    icon: raftDefinition.icon,
+    desc: raftDefinition.desc,
+    scenario: raftDefinition.scenario,
+    status: 'ready' as const,
   },
 ];
 
