@@ -36,6 +36,9 @@ const categories = [
       { name: '广度优先搜索 (BFS)', slug: 'graph/bfs', complexity: 'O(V+E)', available: true, weighted: false, directed: false, desc: '逐层遍历图的节点' },
       { name: '深度优先搜索 (DFS)', slug: 'graph/dfs', complexity: 'O(V+E)', available: true, weighted: false, directed: false, desc: '沿分支深入遍历图的节点' },
       { name: 'Dijkstra 最短路径', slug: 'graph/dijkstra', complexity: 'O(V²)', available: true, weighted: true, directed: false, desc: '单源最短路径算法' },
+      { name: '拓扑排序 (Kahn)', slug: 'graph/topological-sort', complexity: 'O(V+E)', available: true, weighted: false, directed: true, desc: '入度归零入队，DAG 线性排序' },
+      { name: 'Prim 最小生成树', slug: 'graph/prim', complexity: 'O(V²)', available: true, weighted: true, directed: false, desc: '从起点生长，每次选最小横切边' },
+      { name: 'Kruskal 最小生成树', slug: 'graph/kruskal', complexity: 'O(E log E)', available: true, weighted: true, directed: false, desc: '边按权重排序，并查集避免成环' },
     ],
   },
   {

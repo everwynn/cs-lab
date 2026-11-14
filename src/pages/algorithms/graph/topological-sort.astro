@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import GraphVisualizer from '../../../components/algorithms/GraphVisualizer.vue';
+---
+
+<BaseLayout title="拓扑排序（Kahn）动画演示 - Demo Center" description="拓扑排序可视化演示：入度表 + 队列驱动，对有向无环图做线性排序，Java 代码同步高亮">
+  <article class="max-w-5xl mx-auto px-6 py-10">
+    <a href="/algorithms" class="inline-flex items-center gap-1 text-sm text-accent-dark dark:text-accent hover:underline mb-6">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      返回算法列表
+    </a>
+
+    <header class="mb-8">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-3xl">🧭</span>
+        <div>
+          <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">拓扑排序（Kahn）</h1>
+          <p class="text-gray-500 dark:text-slate-400 mt-1">Kahn's Algorithm · 入度归零，队列推进</p>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-2 mt-4">
+        <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400">O(V+E)</span>
+        <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">O(V) 空间</span>
+        <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400">有向无环图</span>
+      </div>
+    </header>
+
+    <GraphVisualizer client:load algorithm="topological-sort" />
+
+    <section class="mt-12 space-y-6">
+      <div class="p-6 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-3">核心思想</h2>
+        <p class="text-gray-600 dark:text-slate-400 leading-relaxed">
+          统计每个节点的<strong>入度</strong>（还有几个前置任务没完成）。入度为 0 的节点（没有任何前置）先入队；每出队一个节点就加入输出序列，并把它的所有后继入度减 1；减到 0 的后继立即入队。循环直到队列为空——出队顺序就是一个合法的拓扑序。
+        </p>
+      </div>
+
+      <div class="p-6 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">复杂度分析</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left">
+            <thead class="text-xs text-gray-500 dark:text-slate-400 uppercase bg-gray-50 dark:bg-slate-800/50">
+              <tr>
+                <th class="px-4 py-2 rounded-l-lg">实现</th>
+                <th class="px-4 py-2">时间复杂度</th>
+                <th class="px-4 py-2 rounded-r-lg">说明</th>
+              </tr>
+            </thead>
+            <tbody class="text-gray-700 dark:text-slate-300">
+              <tr class="border-b border-gray-100 dark:border-slate-800">
+                <td class="px-4 py-3">邻接表</td>
+                <td class="px-4 py-3 font-mono font-bold text-green-600 dark:text-green-400">O(V+E)</td>
+                <td class="px-4 py-3">每个节点入队一次、每条边被减一次入度</td>
+              </tr>
+              <tr class="border-b border-gray-100 dark:border-slate-800">
+                <td class="px-4 py-3">邻接矩阵</td>
+                <td class="px-4 py-3 font-mono font-bold text-amber-600 dark:text-amber-400">O(V²)</td>
+                <td class="px-4 py-3">每次扫描整行找后继</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3">空间</td>
+                <td class="px-4 py-3 font-mono font-bold text-blue-600 dark:text-blue-400">O(V)</td>
+                <td class="px-4 py-3">入度表与队列</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="p-6 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-3">应用场景</h2>
+        <ul class="list-disc list-inside text-gray-600 dark:text-slate-400 space-y-1">
+          <li><strong>构建系统</strong>：Make / Bazel / Gradle 按依赖顺序执行任务，Maven 多模块 reactor 构建</li>
+          <li><strong>包管理</strong>：npm / pip 按依赖拓扑序安装，避免缺依赖</li>
+          <li><strong>任务调度</strong>：Airflow 等工作流引擎的 DAG 调度</li>
+          <li><strong>面试高频</strong>：LeetCode 207 / 210「课程表」系列</li>
+        </ul>
+      </div>
+
+      <div class="p-6 rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/60 dark:bg-amber-900/10">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-3">有环怎么发现？</h2>
+        <p class="text-gray-600 dark:text-slate-400 leading-relaxed">
+          如果最终<strong>输出节点数 &lt; 总节点数</strong>，说明剩下的节点互相成环、入度永远减不到 0。Kahn 算法顺带完成了环检测，而且剩余未出队的节点就是卡在环里的部分，比 DFS 三色标记更容易定位问题。
+        </p>
+      </div>
+    </section>
+  </article>
+</BaseLayout>

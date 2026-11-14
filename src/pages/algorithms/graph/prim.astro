@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import GraphVisualizer from '../../../components/algorithms/GraphVisualizer.vue';
+---
+
+<BaseLayout title="Prim 最小生成树动画演示 - Demo Center" description="Prim 算法可视化演示：从起点生长最小生成树，每次选最小横切边，Java 代码同步高亮">
+  <article class="max-w-5xl mx-auto px-6 py-10">
+    <a href="/algorithms" class="inline-flex items-center gap-1 text-sm text-accent-dark dark:text-accent hover:underline mb-6">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      返回算法列表
+    </a>
+
+    <header class="mb-8">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-3xl">🌱</span>
+        <div>
+          <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">Prim 最小生成树</h1>
+          <p class="text-gray-500 dark:text-slate-400 mt-1">从一棵树长出整张图，每次选最小横切边</p>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-2 mt-4">
+        <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400">O(V²)</span>
+        <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">O(V) 空间</span>
+        <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400">带权无向图</span>
+      </div>
+    </header>
+
+    <GraphVisualizer client:load algorithm="prim" start-node="A" />
+
+    <section class="mt-12 space-y-6">
+      <div class="p-6 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-3">核心思想</h2>
+        <p class="text-gray-600 dark:text-slate-400 leading-relaxed">
+          从任意起点生长一棵树，维护「树内—树外」之间的<strong>横切边</strong>候选集。每一轮选权重最小的横切边，把对应的新节点吸入树中，直到所有节点入树。得到的 n 个节点、n−1 条边、总权最小的树就是最小生成树（MST）。
+        </p>
+      </div>
+
+      <div class="p-6 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">复杂度分析</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left">
+            <thead class="text-xs text-gray-500 dark:text-slate-400 uppercase bg-gray-50 dark:bg-slate-800/50">
+              <tr>
+                <th class="px-4 py-2 rounded-l-lg">实现</th>
+                <th class="px-4 py-2">时间复杂度</th>
+                <th class="px-4 py-2 rounded-r-lg">说明</th>
+              </tr>
+            </thead>
+            <tbody class="text-gray-700 dark:text-slate-300">
+              <tr class="border-b border-gray-100 dark:border-slate-800">
+                <td class="px-4 py-3">数组（邻接矩阵）</td>
+                <td class="px-4 py-3 font-mono font-bold text-green-600 dark:text-green-400">O(V²)</td>
+                <td class="px-4 py-3">每轮线性扫描 lowcost 数组，稠密图友好</td>
+              </tr>
+              <tr class="border-b border-gray-100 dark:border-slate-800">
+                <td class="px-4 py-3">优先队列优化</td>
+                <td class="px-4 py-3 font-mono font-bold text-amber-600 dark:text-amber-400">O(E log V)</td>
+                <td class="px-4 py-3">最小堆维护横切边，边少时更快</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3">空间</td>
+                <td class="px-4 py-3 font-mono font-bold text-blue-600 dark:text-blue-400">O(V)</td>
+                <td class="px-4 py-3">inTree 标记与最小权数组</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="p-6 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-3">与 Kruskal 怎么选？</h2>
+        <ul class="list-disc list-inside text-gray-600 dark:text-slate-400 space-y-1">
+          <li><strong>稠密图选 Prim</strong>：E ≈ V² 时 O(V²) 优于 Kruskal 的 O(E log E)</li>
+          <li><strong>稀疏图选 Kruskal</strong>：边少时排序成本低，且不要求图预先连通</li>
+          <li>两种算法选出的 MST 总权重一定相同，但 MST 本身<strong>可能不唯一</strong>（等权边可互换）</li>
+          <li>面试高频：LeetCode 1584「连接所有点的最小费用」、1135「最低成本联通所有城市」</li>
+        </ul>
+      </div>
+
+      <div class="p-6 rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/60 dark:bg-amber-900/10">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-3">和 Dijkstra 是「孪生兄弟」</h2>
+        <p class="text-gray-600 dark:text-slate-400 leading-relaxed">
+          两者都是「每轮选最小」的贪心，区别只在候选值的定义：Dijkstra 选的是<strong>起点到该点的路径长度</strong>（累加），Prim 选的是<strong>该点到树的最小边权</strong>（不累加）。理解这个差别，就能一次记清两个算法——这也是面试最常混淆的一对。
+        </p>
+      </div>
+    </section>
+  </article>
+</BaseLayout>

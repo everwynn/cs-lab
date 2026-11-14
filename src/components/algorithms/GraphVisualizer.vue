@@ -83,9 +83,35 @@ function isFrontier(nodeId: string): boolean {
   return false
 }
 
+function edgeKeyOf(edge: GraphEdge): string {
+  return `${edge.from}-${edge.to}`
+}
+
+function isCurrentEdge(edge: GraphEdge): boolean {
+  return currentStepData.value?.currentEdgeKey === edgeKeyOf(edge)
+}
+
+function isMstEdge(edge: GraphEdge): boolean {
+  return !!currentStepData.value?.mstEdgeKeys?.includes(edgeKeyOf(edge))
+}
+
+function isRejectedEdge(edge: GraphEdge): boolean {
+  return !!currentStepData.value?.rejectedEdgeKeys?.includes(edgeKeyOf(edge))
+}
+
+function isCandidateEdge(edge: GraphEdge): boolean {
+  return !!currentStepData.value?.candidateEdgeKeys?.includes(edgeKeyOf(edge))
+}
+
 function edgeClasses(edge: GraphEdge): string {
   const step = currentStepData.value
-  if (!step || !step.current) return 'stroke-gray-300 dark:stroke-slate-600'
+  if (!step) return 'stroke-gray-300 dark:stroke-slate-600'
+  // 拓扑 / MST 专属状态优先于遍历高亮
+  if (isCurrentEdge(edge)) return 'stroke-amber-400 dark:stroke-amber-500'
+  if (isMstEdge(edge)) return 'stroke-green-500 dark:stroke-green-500'
+  if (isRejectedEdge(edge)) return 'stroke-gray-300 dark:stroke-slate-600'
+  if (isCandidateEdge(edge)) return 'stroke-violet-400 dark:stroke-violet-500'
+  if (!step.current) return 'stroke-gray-300 dark:stroke-slate-600'
   if ((edge.from === step.current || edge.to === step.current)) {
     const other = edge.from === step.current ? edge.to : edge.from
     if (!step.visited.includes(other) || step.visited.indexOf(step.current) >= step.visited.indexOf(other)) {
@@ -93,6 +119,35 @@ function edgeClasses(edge: GraphEdge): string {
     }
   }
   return 'stroke-gray-300 dark:stroke-slate-600'
+}
+
+function edgeStrokeWidth(edge: GraphEdge): number {
+  return isCurrentEdge(edge) || isMstEdge(edge) ? 4 : 3
+}
+
+function edgeMarker(edge: GraphEdge): string | undefined {
+  if (!edge.directed) return undefined
+  return isCurrentEdge(edge) ? 'url(#gv-arrow-amber)' : 'url(#gv-arrow)'
+}
+
+const NODE_R = 20
+const ARROW_GAP = 6
+
+function edgeCoords(edge: GraphEdge): { x1: number; y1: number; x2: number; y2: number } {
+  const nodes = currentStepData.value?.nodes || []
+  const a = nodes.find((n) => n.id === edge.from)
+  const b = nodes.find((n) => n.id === edge.to)
+  if (!a || !b) return { x1: 0, y1: 0, x2: 0, y2: 0 }
+  const dx = b.x - a.x
+  const dy = b.y - a.y
+  const len = Math.hypot(dx, dy) || 1
+  const gap = NODE_R + (edge.directed ? ARROW_GAP : 1)
+  return {
+    x1: a.x + (dx / len) * NODE_R,
+    y1: a.y + (dy / len) * NODE_R,
+    x2: b.x - (dx / len) * gap,
+    y2: b.y - (dy / len) * gap,
+  }
 }
 
 function nodeRadius(node: GraphNode): number {
@@ -125,18 +180,28 @@ onUnmounted(() => pause())
             <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-purple-500"></span>待访问</span>
             <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-amber-400 dark:bg-amber-500"></span>当前</span>
             <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-green-500 dark:bg-green-600"></span>已访问</span>
+            <span v-if="currentStepData?.mstEdgeKeys !== undefined" class="flex items-center gap-1"><span class="w-4 h-1 rounded-full bg-green-500"></span>MST 边</span>
+            <span v-if="currentStepData?.candidateEdgeKeys !== undefined" class="flex items-center gap-1"><span class="w-4 h-1 rounded-full bg-violet-400"></span>候选边</span>
+            <span v-if="currentStepData?.rejectedEdgeKeys !== undefined" class="flex items-center gap-1"><span class="w-4 h-0.5 bg-gray-400 dark:bg-slate-500"></span>成环拒绝</span>
           </div>
         </div>
         <div class="flex justify-center bg-gray-50 dark:bg-slate-900/30 rounded-lg p-2 sm:p-4">
           <svg viewBox="0 0 400 320" class="w-full sm:max-w-md h-auto">
+            <defs>
+              <marker id="gv-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8" />
+              </marker>
+              <marker id="gv-arrow-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#fbbf24" />
+              </marker>
+            </defs>
             <!-- 边 -->
             <line v-for="(edge, idx) in currentStepData?.edges" :key="'edge-' + idx"
-              :x1="currentStepData?.nodes.find(n => n.id === edge.from)?.x"
-              :y1="currentStepData?.nodes.find(n => n.id === edge.from)?.y"
-              :x2="currentStepData?.nodes.find(n => n.id === edge.to)?.x"
-              :y2="currentStepData?.nodes.find(n => n.id === edge.to)?.y"
+              v-bind="edgeCoords(edge)"
               :class="['transition-all duration-300', edgeClasses(edge)]"
-              stroke-width="3" />
+              :stroke-width="edgeStrokeWidth(edge)"
+              :stroke-dasharray="isRejectedEdge(edge) ? '6 4' : undefined"
+              :marker-end="edgeMarker(edge)" />
             <!-- 边权重 -->
             <text v-for="(edge, idx) in (meta.weighted ? currentStepData?.edges : [])" :key="'weight-' + idx"
               :x="((currentStepData?.nodes.find(n => n.id === edge.from)?.x || 0) + (currentStepData?.nodes.find(n => n.id === edge.to)?.x || 0)) / 2"
@@ -161,6 +226,38 @@ onUnmounted(() => pause())
 
         <!-- 状态面板 -->
         <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div v-if="currentStepData?.indegrees !== undefined" class="p-3 rounded-lg bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-100 dark:border-cyan-800 sm:col-span-2">
+            <div class="text-xs text-cyan-600 dark:text-cyan-400 font-medium mb-1">入度表 Indegree</div>
+            <div class="flex flex-wrap gap-2">
+              <span v-for="node in currentStepData.nodes" :key="'ind-' + node.id"
+                class="text-xs font-mono px-2 py-1 rounded"
+                :class="currentStepData.indegrees[node.id] === 0 ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 font-bold' : 'bg-white dark:bg-slate-800 text-cyan-700 dark:text-cyan-300'">
+                {{ node.label }}={{ currentStepData.indegrees[node.id] }}
+              </span>
+            </div>
+          </div>
+          <div v-if="currentStepData?.sortedEdges !== undefined" class="p-3 rounded-lg bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-800 sm:col-span-2">
+            <div class="text-xs text-orange-600 dark:text-orange-400 font-medium mb-1">边排序 Edge List</div>
+            <div class="flex flex-wrap gap-1.5">
+              <span v-for="(se, si) in currentStepData.sortedEdges" :key="'se-' + si"
+                class="text-[10px] font-mono px-1.5 py-0.5 rounded border"
+                :class="se.status === 'accepted' ? 'bg-emerald-100 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300'
+                  : se.status === 'rejected' ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-500 dark:text-red-400 line-through'
+                  : currentStepData.currentEdgeKey === (se.from + '-' + se.to) ? 'bg-amber-100 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 font-bold'
+                  : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-500 dark:text-slate-400'">
+                {{ se.from }}-{{ se.to }}({{ se.weight }})
+              </span>
+            </div>
+          </div>
+          <div v-if="currentStepData?.sets !== undefined" class="p-3 rounded-lg bg-teal-50 dark:bg-teal-900/20 border border-teal-100 dark:border-teal-800 sm:col-span-2">
+            <div class="text-xs text-teal-600 dark:text-teal-400 font-medium mb-1">并查集 Sets · 集合数 {{ currentStepData.sets.length }}</div>
+            <div class="flex flex-wrap gap-2">
+              <span v-for="(group, gi) in currentStepData.sets" :key="'set-' + gi"
+                class="text-xs font-mono px-2 py-1 rounded bg-white dark:bg-slate-800 text-teal-700 dark:text-teal-300">
+                #{{ gi + 1 }}: {{ group.join(',') }}
+              </span>
+            </div>
+          </div>
           <div v-if="currentStepData?.queue !== undefined" class="p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800">
             <div class="text-xs text-purple-600 dark:text-purple-400 font-medium mb-1">队列 Queue</div>
             <div class="text-sm font-mono text-purple-700 dark:text-purple-300">{{ currentStepData.queue.length > 0 ? currentStepData.queue.join(' → ') : '空' }}</div>
@@ -179,7 +276,19 @@ onUnmounted(() => pause())
               </span>
             </div>
           </div>
-          <div class="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 sm:col-span-2">
+          <div v-if="currentStepData?.totalWeight !== undefined" class="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800">
+            <div class="text-xs text-green-600 dark:text-green-400 font-medium mb-1">MST 进度</div>
+            <div class="text-sm font-mono text-green-700 dark:text-green-300">
+              {{ currentStepData.mstEdgeKeys?.length || 0 }} 条边 · 总权重 {{ currentStepData.totalWeight }}
+            </div>
+          </div>
+          <div v-if="currentStepData?.candidateEdgeKeys !== undefined" class="p-3 rounded-lg bg-violet-50 dark:bg-violet-900/20 border border-violet-100 dark:border-violet-800">
+            <div class="text-xs text-violet-600 dark:text-violet-400 font-medium mb-1">候选边 Candidates</div>
+            <div class="text-sm font-mono text-violet-700 dark:text-violet-300">
+              {{ currentStepData.candidateEdgeKeys.length > 0 ? currentStepData.candidateEdgeKeys.join(' · ') : '空' }}
+            </div>
+          </div>
+          <div v-if="currentStepData?.totalWeight === undefined" class="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 sm:col-span-2">
             <div class="flex items-center justify-between mb-1">
               <span class="text-xs text-green-600 dark:text-green-400 font-medium">遍历顺序</span>
               <span class="text-[10px] px-1.5 py-0.5 rounded bg-green-100 dark:bg-green-800/40 text-green-700 dark:text-green-300 font-mono">已访问 {{ visitedCount }} / {{ currentStepData?.nodes.length || 0 }}</span>
@@ -197,7 +306,7 @@ onUnmounted(() => pause())
 
     <!-- 起点选择 + 播放控制 -->
     <div class="flex flex-col sm:flex-row gap-3">
-      <div class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/30">
+      <div v-if="meta.usesStart !== false" class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/30">
         <label class="text-xs font-medium text-gray-600 dark:text-slate-400 whitespace-nowrap">起点</label>
         <select v-model="startNode"
           class="text-sm font-mono px-3 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-accent/30">

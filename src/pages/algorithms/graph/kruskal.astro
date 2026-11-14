@@ -1,0 +1,95 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import GraphVisualizer from '../../../components/algorithms/GraphVisualizer.vue';
+---
+
+<BaseLayout title="Kruskal 最小生成树动画演示 - Demo Center" description="Kruskal 算法可视化演示：边按权重排序 + 并查集拦截成环，Java 代码同步高亮">
+  <article class="max-w-5xl mx-auto px-6 py-10">
+    <a href="/algorithms" class="inline-flex items-center gap-1 text-sm text-accent-dark dark:text-accent hover:underline mb-6">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      返回算法列表
+    </a>
+
+    <header class="mb-8">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-3xl">🔗</span>
+        <div>
+          <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">Kruskal 最小生成树</h1>
+          <p class="text-gray-500 dark:text-slate-400 mt-1">边按权重排队，并查集拦截成环</p>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-2 mt-4">
+        <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400">O(E log E)</span>
+        <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">O(V) 空间</span>
+        <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400">带权无向图</span>
+      </div>
+    </header>
+
+    <GraphVisualizer client:load algorithm="kruskal" />
+
+    <section class="mt-12 space-y-6">
+      <div class="p-6 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-3">核心思想</h2>
+        <p class="text-gray-600 dark:text-slate-400 leading-relaxed">
+          把所有边按权重<strong>升序排列</strong>，逐条检查：若两端不在同一连通分量（并查集 find 不同）就收下这条边并合并两个集合（union）；若已在同一集合，说明加入会成环，直接丢弃。收满 n−1 条边即得到最小生成树。
+        </p>
+      </div>
+
+      <div class="p-6 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">复杂度分析</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left">
+            <thead class="text-xs text-gray-500 dark:text-slate-400 uppercase bg-gray-50 dark:bg-slate-800/50">
+              <tr>
+                <th class="px-4 py-2 rounded-l-lg">步骤</th>
+                <th class="px-4 py-2">复杂度</th>
+                <th class="px-4 py-2 rounded-r-lg">说明</th>
+              </tr>
+            </thead>
+            <tbody class="text-gray-700 dark:text-slate-300">
+              <tr class="border-b border-gray-100 dark:border-slate-800">
+                <td class="px-4 py-3">边排序</td>
+                <td class="px-4 py-3 font-mono font-bold text-amber-600 dark:text-amber-400">O(E log E)</td>
+                <td class="px-4 py-3">主导复杂度，稀疏图就是它的主场</td>
+              </tr>
+              <tr class="border-b border-gray-100 dark:border-slate-800">
+                <td class="px-4 py-3">并查集扫描</td>
+                <td class="px-4 py-3 font-mono font-bold text-green-600 dark:text-green-400">O(E·α(V))</td>
+                <td class="px-4 py-3">α 为反阿克曼函数，实际可视为常数</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3">空间</td>
+                <td class="px-4 py-3 font-mono font-bold text-blue-600 dark:text-blue-400">O(V)</td>
+                <td class="px-4 py-3">并查集 parent 数组</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="p-6 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-3">与 Prim 怎么选？</h2>
+        <ul class="list-disc list-inside text-gray-600 dark:text-slate-400 space-y-1">
+          <li><strong>稀疏图选 Kruskal</strong>：排序成本由边数决定，真实网络大多是稀疏图</li>
+          <li><strong>稠密图选 Prim</strong>：O(V²) 数组实现更划算，且不用给全部边排序</li>
+          <li>Kruskal 天然支持<strong>非连通图</strong>：每个连通分量各长一棵树，得到最小生成森林</li>
+          <li>同一个问题，两种贪心形态：Prim 按「点」生长，Kruskal 按「边」排队</li>
+        </ul>
+      </div>
+
+      <div class="p-6 rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/60 dark:bg-amber-900/10">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-3">选满 n−1 条就可以停</h2>
+        <p class="text-gray-600 dark:text-slate-400 leading-relaxed">
+          标准实现在选满 n−1 条边时即可<strong>提前结束</strong>，不必扫描剩余边。本演示为了展示并查集「成环拒绝」的判定过程，在选满后继续扫描了剩余 4 条边——它们全部因为两端已连通而被拒绝。两种写法结果相同，只是演示侧重点不同。
+        </p>
+      </div>
+
+      <div class="p-6 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-3">并查集在这里的作用</h2>
+        <p class="text-gray-600 dark:text-slate-400 leading-relaxed">
+          「两端是否已连通」本质是动态连通性问题：并查集用路径压缩把 find 的平均成本压到近似 O(1)。前面数据结构的<strong>并查集</strong>演示讲了它本身怎么工作，这里正是它最经典的真实应用——两个主题可以对照着看。
+        </p>
+      </div>
+    </section>
+  </article>
+</BaseLayout>
