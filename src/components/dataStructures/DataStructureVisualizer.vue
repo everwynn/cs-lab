@@ -127,10 +127,13 @@ function originalRequiredHeight(): number {
     }
     case 'array-list':
       return 220
+    case 'skip-list':
+      return 340
     case 'bst':
     case 'heap':
     case 'trie':
-    case 'union-find': {
+    case 'union-find':
+    case 'rbt': {
       const nodes = state.treeNodes || []
       const maxNodeY = nodes.length ? Math.max(...nodes.map(n => n.y)) : 170
       return Math.max(maxNodeY + 40, 320) + 60
@@ -143,6 +146,35 @@ function originalRequiredHeight(): number {
 const viewBoxH = computed(() => Math.ceil(originalRequiredHeight() * SCALE))
 const viewBoxStr = computed(() => `0 0 ${VIEW_W} ${viewBoxH.value}`)
 const scaleTransform = computed(() => `scale(${SCALE})`)
+
+// ===== 跳表渲染辅助 =====
+const SKIP_HEAD_X = 70
+const SKIP_NIL_X = 810
+const skipLevelY = (lv: number) => 230 - lv * 70
+function skipNodeX(id: string): number {
+  if (id === 'HEAD') return SKIP_HEAD_X
+  if (id === 'NIL') return SKIP_NIL_X
+  return (currentState.value.skipNodes || []).find(n => n.id === id)?.x ?? 0
+}
+
+// 红黑树：高亮时保留颜色语义，仅用描边强调（否则变色帧会被 amber 填充遮盖）
+function nodeCircleClass(node: { id: string; color?: 'red' | 'black' }): string {
+  const active = isActive(node.id)
+  if (!node.color) {
+    return active
+      ? 'fill-amber-50 dark:fill-amber-900/30 stroke-amber-500 dark:stroke-amber-400'
+      : 'fill-white dark:fill-slate-800 stroke-gray-200 dark:stroke-slate-600'
+  }
+  const base = node.color === 'red'
+    ? 'fill-red-500 dark:fill-red-600'
+    : 'fill-slate-800 dark:fill-slate-950'
+  const stroke = active
+    ? 'stroke-amber-400 dark:stroke-amber-300'
+    : node.color === 'red'
+      ? 'stroke-red-600 dark:stroke-red-400'
+      : 'stroke-slate-500'
+  return `${base} ${stroke}`
+}
 </script>
 
 <template>
@@ -363,9 +395,50 @@ const scaleTransform = computed(() => `scale(${SCALE})`)
               </text>
             </g>
 
-            <!-- ===== BST ===== -->
-            <g v-else-if="ds.layout === 'bst'">
-              <text x="360" y="16" text-anchor="middle" class="text-sm fill-gray-400 dark:fill-slate-500 font-mono">二叉搜索树 (root)</text>
+            <!-- ===== 跳表 Skip List（多层索引） ===== -->
+            <g v-else-if="ds.layout === 'skip-list'">
+              <text x="360" y="16" text-anchor="middle" class="text-sm fill-gray-400 dark:fill-slate-500 font-mono">跳表（3 层索引 · 同层向右，末端下降）</text>
+
+              <g v-for="lv in (currentState.skipLevels || 0)" :key="'skip-lv-' + lv">
+                <!-- 层标签 -->
+                <text :x="46" :y="skipLevelY(lv - 1) + 4" text-anchor="start" class="text-xs fill-gray-400 dark:fill-slate-500 font-mono">L{{ lv - 1 }}</text>
+                <!-- 层内边 -->
+                <g v-for="(edge, ei) in (currentState.skipEdges || []).filter(e => e.level === lv - 1)" :key="'skip-e-' + lv + '-' + ei">
+                  <line :x1="skipNodeX(edge.from) + 28" :y1="skipLevelY(lv - 1)"
+                    :x2="skipNodeX(edge.to) - 28" :y2="skipLevelY(lv - 1)"
+                    stroke="currentColor" stroke-width="2"
+                    class="text-gray-300 dark:text-slate-600" marker-end="url(#ds-arrow)" />
+                </g>
+                <!-- HEAD / NIL 哨兵 -->
+                <rect :x="SKIP_HEAD_X - 28" :y="skipLevelY(lv - 1) - 15" width="56" height="30" rx="6"
+                  class="fill-slate-100 dark:fill-slate-800 stroke-gray-300 dark:stroke-slate-600 stroke-2" />
+                <text :x="SKIP_HEAD_X" :y="skipLevelY(lv - 1) + 4" text-anchor="middle" class="text-[10px] fill-gray-500 dark:fill-slate-400 font-mono">HEAD</text>
+                <rect :x="SKIP_NIL_X - 28" :y="skipLevelY(lv - 1) - 15" width="56" height="30" rx="6"
+                  class="fill-slate-100 dark:fill-slate-800 stroke-gray-300 dark:stroke-slate-600 stroke-2" />
+                <text :x="SKIP_NIL_X" :y="skipLevelY(lv - 1) + 4" text-anchor="middle" class="text-[10px] fill-gray-500 dark:fill-slate-400 font-mono">NIL</text>
+                <!-- 层内节点 -->
+                <g v-for="node in (currentState.skipNodes || []).filter(n => n.level === lv - 1)" :key="node.id">
+                  <rect :x="node.x - 28" :y="skipLevelY(lv - 1) - 15" width="56" height="30" rx="6"
+                    :class="['stroke-2 transition-all duration-300',
+                      isActive(node.id)
+                        ? 'fill-amber-50 dark:fill-amber-900/30 stroke-amber-500 dark:stroke-amber-400'
+                        : 'fill-white dark:fill-slate-800 stroke-gray-200 dark:stroke-slate-600']" />
+                  <text :x="node.x" :y="skipLevelY(lv - 1) + 4" text-anchor="middle"
+                    class="text-xs fill-gray-800 dark:fill-slate-100 font-bold font-mono pointer-events-none">{{ node.value }}</text>
+                </g>
+              </g>
+
+              <text x="360" y="300" text-anchor="middle" class="text-sm fill-gray-400 dark:fill-slate-500 font-mono">
+                {{ currentState.info ? Object.entries(currentState.info).map(([k, v]) => `${k} = ${v}`).join('  ·  ') : '' }}
+              </text>
+              <text x="360" y="322" text-anchor="middle" class="text-sm fill-gray-400 dark:fill-slate-500 font-mono">
+                {{ currentStepData?.message || '' }}
+              </text>
+            </g>
+
+            <!-- ===== BST / 红黑树（复用树形渲染 + 颜色） ===== -->
+            <g v-else-if="ds.layout === 'bst' || ds.layout === 'rbt'">
+              <text x="360" y="16" text-anchor="middle" class="text-sm fill-gray-400 dark:fill-slate-500 font-mono">{{ ds.layout === 'rbt' ? '红黑树（根 = 黑）' : '二叉搜索树 (root)' }}</text>
 
               <g v-if="!(currentState.treeNodes || []).length">
                 <text x="360" y="170" text-anchor="middle" class="text-sm fill-gray-400 dark:fill-slate-500">空树 (root = null)</text>
@@ -385,15 +458,12 @@ const scaleTransform = computed(() => `scale(${SCALE})`)
 
                 <!-- 节点 -->
                 <g v-for="node in (currentState.treeNodes || [])" :key="node.id">
+                  <circle v-if="isActive(node.id)" :cx="node.x" :cy="node.y" r="26"
+                    class="fill-none stroke-amber-400 dark:stroke-amber-300 stroke-2" />
                   <circle :cx="node.x" :cy="node.y" r="20"
-                    :class="[
-                      'stroke-2 transition-all duration-300',
-                      isActive(node.id)
-                        ? 'fill-amber-50 dark:fill-amber-900/30 stroke-amber-500 dark:stroke-amber-400'
-                        : 'fill-white dark:fill-slate-800 stroke-gray-200 dark:stroke-slate-600',
-                    ]" />
+                    :class="['stroke-2 transition-all duration-300', nodeCircleClass(node)]" />
                   <text :x="node.x" :y="node.y + 4" text-anchor="middle"
-                    class="text-sm fill-gray-800 dark:fill-slate-100 font-bold font-mono pointer-events-none">
+                    :class="node.color ? 'text-sm fill-white font-bold font-mono pointer-events-none' : 'text-sm fill-gray-800 dark:fill-slate-100 font-bold font-mono pointer-events-none'">
                     {{ node.value }}
                   </text>
                 </g>

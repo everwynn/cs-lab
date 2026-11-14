@@ -1,9 +1,9 @@
 // ============================================================
-// 数据结构可视化 —— 9 个数据结构定义与步骤生成器
+// 数据结构可视化 —— 11 个数据结构定义与步骤生成器
 // ============================================================
 
 // 布局类型：决定 Visualizer 如何渲染当前状态
-export type DSLayout = 'stack' | 'queue' | 'linked-list' | 'hash-map' | 'bst' | 'heap' | 'trie' | 'union-find' | 'array-list'
+export type DSLayout = 'stack' | 'queue' | 'linked-list' | 'hash-map' | 'bst' | 'heap' | 'trie' | 'union-find' | 'array-list' | 'skip-list' | 'rbt'
 
 // 通用节点：用于数组/栈/队列/链表/哈希链
 export interface DSNode {
@@ -27,6 +27,22 @@ export interface DSTreeNode extends DSNode {
   x: number
   y: number
   end?: boolean       // Trie：是否为单词结束节点
+  color?: 'red' | 'black'  // 红黑树：节点颜色
+}
+
+// 跳表节点：同一个值在多个层各有一条记录
+// id 形如 'v3-L2'，HEAD / NIL 作为边端点特殊 id 使用
+export interface DSSkipNode {
+  id: string
+  value: string
+  level: number       // 0 = 底层
+  x: number           // 列坐标（同一值的各层 x 相同，上下对齐）
+}
+
+export interface DSSkipEdge {
+  from: string
+  to: string
+  level: number
 }
 
 // 每一步的完整状态：随步骤推进而重建
@@ -40,6 +56,9 @@ export interface DSState {
   tableSize?: number                                // 哈希表桶数
   treeNodes?: DSTreeNode[]                          // BST/堆/Trie/并查集 节点
   treeEdges?: DSEdge[]                              // 树的父子边 / 并查集父指针
+  skipNodes?: DSSkipNode[]                          // 跳表：所有层上的节点
+  skipEdges?: DSSkipEdge[]                          // 跳表：层内指针（HEAD/NIL 为特殊端点）
+  skipLevels?: number                               // 跳表：总层数
   info?: Record<string, string>                     // 附加信息（size、capacity 等）
 }
 
@@ -972,6 +991,260 @@ export const arrayListDS: DSDefinition = {
 }
 
 // ============================================================
+// 10. 跳表 Skip List（3 层固定索引）
+// ============================================================
+export const skipListDS: DSDefinition = {
+  id: 'skip-list',
+  name: '跳表',
+  category: 'linked',
+  icon: '🔗',
+  desc: '多层索引链表，用随机层高实现期望 O(log n) 查找，无需旋转。',
+  scenario: 'Redis zset、LevelDB 内存表，以及需要有序集合又不想维护平衡树的场景。',
+  code: `public class SkipList {
+    private static final int MAX_LEVEL = 3;
+    private final Node head = new Node(-1, MAX_LEVEL);
+
+    static class Node {
+        int val;
+        Node[] next;
+        Node(int v, int level) {
+            val = v;
+            next = new Node[level + 1];
+        }
+    }
+
+    public boolean find(int target) {
+        Node cur = head;
+        for (int lv = MAX_LEVEL - 1; lv >= 0; lv--) {
+            while (cur.next[lv] != null
+                    && cur.next[lv].val < target) {
+                cur = cur.next[lv];        // 同层向右
+            }
+        }
+        return cur.next[0] != null
+                && cur.next[0].val == target;
+    }
+
+    public void insert(int val, int level) {
+        Node node = new Node(val, level);
+        Node cur = head;
+        for (int lv = MAX_LEVEL - 1; lv >= 0; lv--) {
+            while (cur.next[lv] != null
+                    && cur.next[lv].val < val) {
+                cur = cur.next[lv];
+            }
+            if (lv <= level) {             // 该层建立索引
+                node.next[lv] = cur.next[lv];
+                cur.next[lv] = node;
+            }
+        }
+    }
+}`,
+  layout: 'skip-list',
+  generateSteps: () => {
+    const steps: DSStep[] = []
+    const LEVELS = 3
+
+    // 6 个元素固定列坐标（按值升序），同值各层上下对齐
+    const COLS = ['3', '6', '7', '9', '12', '19']
+    const colX = (v: string) => 150 + COLS.indexOf(v) * 105
+
+    // 每个值的最高层（模拟抛硬币结果，固定以便观察）
+    const heights: Record<string, number> = { '3': 2, '6': 0, '7': 1, '9': 2, '12': 0, '19': 1 }
+
+    const buildState = (present: string[]): DSState => {
+      const skipNodes: DSSkipNode[] = []
+      const skipEdges: DSSkipEdge[] = []
+      for (let lv = 0; lv < LEVELS; lv++) {
+        const levelVals = present.filter(v => heights[v] >= lv)
+        let prev = 'HEAD'
+        for (const v of levelVals) {
+          const id = `v${v}-L${lv}`
+          skipNodes.push({ id, value: v, level: lv, x: colX(v) })
+          skipEdges.push({ from: prev, to: id, level: lv })
+          prev = id
+        }
+        skipEdges.push({ from: prev, to: 'NIL', level: lv })
+      }
+      return {
+        skipNodes,
+        skipEdges,
+        skipLevels: LEVELS,
+        info: { 元素数: String(present.length), 层数: String(LEVELS) },
+      }
+    }
+
+    const mk = (desc: string, line: number, present: string[], msg?: string, highlight?: string[]): DSStep =>
+      ({ description: desc, codeLine: line, state: buildState(present), highlight, message: msg })
+
+    steps.push(mk(
+      '初始化跳表：固定 3 层索引（L0 底层链表，L1/L2 稀疏索引）。真实实现的层高由随机函数决定，本例固定层高以便观察。',
+      3, [], 'new SkipList()'
+    ))
+    steps.push(mk('insert(3)：抛得层高 3，3 同时出现在 L0/L1/L2，成为最高层索引节点。', 35, ['3'], 'insert(3) → 层高 3', ['v3-L0', 'v3-L1', 'v3-L2']))
+    steps.push(mk('insert(6)：层高 1，只出现在底层 L0，插入在 3 与 NIL 之间。', 35, ['3', '6'], 'insert(6) → 层高 1', ['v6-L0']))
+    steps.push(mk('insert(7)：层高 2，出现在 L0/L1，L1 形成 3 → 7 索引。', 35, ['3', '6', '7'], 'insert(7) → 层高 2', ['v7-L0', 'v7-L1']))
+    steps.push(mk('insert(9)：层高 3，出现在三层，L2 形成 3 → 9。', 35, ['3', '6', '7', '9'], 'insert(9) → 层高 3', ['v9-L0', 'v9-L1', 'v9-L2']))
+    steps.push(mk('insert(12)：层高 1，仅底层，位于 9 与 NIL 之间。', 35, ['3', '6', '7', '9', '12'], 'insert(12) → 层高 1', ['v12-L0']))
+    steps.push(mk('insert(19)：层高 2，出现在 L0/L1，L1 形成 9 → 19。', 35, ['3', '6', '7', '9', '12', '19'], 'insert(19) → 层高 2', ['v19-L0', 'v19-L1']))
+    steps.push(mk(
+      '结构完成：L2 只有 3、9；L1 有 3、7、9、19；L0 包含全部 6 个元素。层数越高节点越稀疏，就是「快速通道」。',
+      34, ['3', '6', '7', '9', '12', '19'], 'build done'
+    ))
+    steps.push(mk(
+      'search(12)：从 L2 的 HEAD 出发：3 ≤ 12 向右跳到 3；9 ≤ 12 继续跳到 9；下一个是 NIL，下降到 L1。',
+      19, ['3', '6', '7', '9', '12', '19'], 'search(12) · L2', ['v3-L2', 'v9-L2']
+    ))
+    steps.push(mk('L1：从 9 出发，下一个 19 > 12，停止，下降到底层 L0。', 17, ['3', '6', '7', '9', '12', '19'], 'search(12) · L1', ['v9-L1']))
+    steps.push(mk('L0：从 9 向右，12 == 12，命中！全程 3 次水平移动。', 19, ['3', '6', '7', '9', '12', '19'], 'search(12) → true', ['v9-L0', 'v12-L0']))
+    steps.push(mk(
+      '对比：普通链表查 12 需要 5 步（3→6→7→9→12）；跳表只用了 3 次水平移动。高层索引让查找路径大幅缩短。',
+      22, ['3', '6', '7', '9', '12', '19'], '3 moves vs 5'
+    ))
+    steps.push(mk('search(10)：L2：3 ≤ 10 向右到 3；9 ≤ 10 到 9；NIL，下降。', 19, ['3', '6', '7', '9', '12', '19'], 'search(10) · L2', ['v3-L2', 'v9-L2']))
+    steps.push(mk('L1：从 9 出发，19 > 10，下降。', 17, ['3', '6', '7', '9', '12', '19'], 'search(10) · L1', ['v9-L1']))
+    steps.push(mk('L0：从 9 出发，12 > 10 → 10 不存在。查找失败同样只用了 3 次移动。', 19, ['3', '6', '7', '9', '12', '19'], 'search(10) → false', ['v9-L0', 'v12-L0']))
+    steps.push(mk(
+      '复杂度：查找/插入/删除期望 O(log n)，空间期望 O(n)（每元素平均 2 层）。无需旋转、实现简单，这正是 Redis zset 选择跳表的原因。',
+      16, ['3', '6', '7', '9', '12', '19'], 'O(log n)'
+    ))
+    return steps
+  },
+}
+
+// ============================================================
+// 11. 红黑树 Red-Black Tree（颜色 + 旋转自平衡）
+// ============================================================
+export const rbtDS: DSDefinition = {
+  id: 'red-black-tree',
+  name: '红黑树',
+  category: 'tree',
+  icon: '🌴',
+  desc: '带颜色约束的自平衡二叉搜索树，树高稳定 O(log n)，插入删除只需少量旋转。',
+  scenario: 'Java TreeMap / HashMap 树化、Linux CFS 调度器，读写混合的有序集合。',
+  code: `public class RedBlackTree {
+    private static final boolean RED = true;
+    private static final boolean BLACK = false;
+
+    static class Node {
+        int val;
+        Node left, right, parent;
+        boolean color = RED;           // 新节点默认红色
+        Node(int v) { val = v; }
+    }
+
+    private Node root;
+
+    public void put(int val) {
+        Node p = null, x = root;
+        while (x != null) {
+            p = x;
+            x = val < x.val ? x.left : x.right;
+        }
+        Node z = new Node(val);
+        z.parent = p;
+        if (p == null) root = z;
+        else if (val < p.val) p.left = z;
+        else p.right = z;
+        fixAfterInsertion(z);
+    }
+
+    private void fixAfterInsertion(Node z) {
+        while (z.parent != null && isRed(z.parent)) {
+            Node grand = z.parent.parent;
+            Node uncle = (z.parent == grand.left) ? grand.right : grand.left;
+            if (isRed(uncle)) {            // 情形一：叔叔为红 → 变色
+                setRed(grand);
+                setBlack(z.parent);
+                setBlack(uncle);
+                z = grand;
+            } else {                       // 情形二：叔叔为黑 → 旋转 + 变色
+                if (z.parent == grand.left && z == z.parent.right) {
+                    z = z.parent;
+                    rotateLeft(z);
+                } else if (z.parent == grand.right && z == z.parent.left) {
+                    z = z.parent;
+                    rotateRight(z);
+                }
+                setBlack(z.parent);
+                setRed(grand);
+                if (z.parent == grand.left) rotateRight(grand);
+                else rotateLeft(grand);
+            }
+        }
+        setBlack(root);
+    }
+}`,
+  layout: 'rbt',
+  generateSteps: () => {
+    const steps: DSStep[] = []
+
+    const N = (id: string, x: number, y: number, color: 'red' | 'black'): DSTreeNode =>
+      ({ id, value: id, x, y, color })
+
+    const mk = (
+      desc: string, line: number, nodes: DSTreeNode[], edges: DSEdge[],
+      highlight?: string[], msg?: string
+    ): DSStep => ({
+      description: desc,
+      codeLine: line,
+      state: { treeNodes: nodes, treeEdges: edges },
+      highlight,
+      message: msg,
+    })
+
+    steps.push(mk(
+      '初始化空的红黑树。5 条性质：① 节点非红即黑 ② 根为黑 ③ 红节点的子节点必黑 ④ 各路径黑节点数相同 ⑤ 新节点默认红色。',
+      14, [], [], undefined, 'new RedBlackTree()'
+    ))
+    steps.push(mk('insert(10)：树为空，10 作为根，按性质②染成黑色。',
+      51, [N('10', 360, 80, 'black')], [], ['10'], 'insert(10)'))
+    steps.push(mk('insert(20)：20 > 10 作为右孩子插入，默认红色；父 10 是黑色，无需修复。',
+      24, [N('10', 300, 80, 'black'), N('20', 450, 160, 'red')],
+      [{ from: '10', to: '20' }], ['20'], 'insert(20)'))
+    steps.push(mk(
+      'insert(30)：30 > 20 作为右孩子插入，默认红色；但父 20 也是红色——出现「红红相连」冲突，违反性质③。叔叔为空（黑色），需要旋转修复。',
+      29, [N('10', 300, 80, 'black'), N('20', 450, 160, 'red'), N('30', 580, 240, 'red')],
+      [{ from: '10', to: '20' }, { from: '20', to: '30' }], ['20', '30'], 'insert(30) → 红红冲突'
+    ))
+    steps.push(mk('修复：对 10 左旋，20 升为根并染黑，10、30 染红。检查：根黑 ✓、无红红 ✓、黑高一致 ✓。',
+      48, [N('20', 400, 80, 'black'), N('10', 280, 160, 'red'), N('30', 540, 160, 'red')],
+      [{ from: '20', to: '10' }, { from: '20', to: '30' }], ['20', '10', '30'], '左旋 + 变色 → 新根 20'))
+    steps.push(mk('insert(15)：10 < 15 < 20，作为 10 的右孩子插入，红色；父 10 是红色，冲突。叔叔 30 也是红色 → 走「变色」修复。',
+      25, [N('20', 400, 80, 'black'), N('10', 280, 160, 'red'), N('30', 540, 160, 'red'), N('15', 360, 240, 'red')],
+      [{ from: '20', to: '10' }, { from: '20', to: '30' }, { from: '10', to: '15' }], ['10', '15'], 'insert(15) → 红红冲突'))
+    steps.push(mk('修复：父 10 与叔 30 染黑，祖父 20 已是根（保持黑）。无需旋转——变色即可解决，这是红黑树与 AVL 的关键差异。',
+      33, [N('20', 400, 80, 'black'), N('10', 280, 160, 'black'), N('30', 540, 160, 'black'), N('15', 360, 240, 'red')],
+      [{ from: '20', to: '10' }, { from: '20', to: '30' }, { from: '10', to: '15' }], ['10', '30'], '变色：10/30 染黑'))
+    steps.push(mk('insert(25)：25 < 30 作为 30 的左孩子，红色；父 30 是黑色，无需修复。',
+      24, [N('20', 400, 80, 'black'), N('10', 280, 160, 'black'), N('30', 540, 160, 'black'), N('15', 360, 240, 'red'), N('25', 460, 240, 'red')],
+      [{ from: '20', to: '10' }, { from: '20', to: '30' }, { from: '10', to: '15' }, { from: '30', to: '25' }], ['25'], 'insert(25)'))
+    steps.push(mk('insert(12)：12 < 15 作为 15 的左孩子，红色；父 15 红、叔为空黑 → 需要「双旋」修复（RL 情形）。',
+      29, [N('20', 400, 80, 'black'), N('10', 280, 160, 'black'), N('30', 540, 160, 'black'), N('15', 360, 240, 'red'), N('25', 460, 240, 'red'), N('12', 320, 320, 'red')],
+      [{ from: '20', to: '10' }, { from: '20', to: '30' }, { from: '10', to: '15' }, { from: '30', to: '25' }, { from: '15', to: '12' }], ['15', '12'], 'insert(12) → 红红冲突'))
+    steps.push(mk('修复第一步：对 15 右旋，12 升到 15 的位置，15 转为 12 的右孩子。',
+      43, [N('20', 400, 80, 'black'), N('10', 280, 160, 'black'), N('30', 540, 160, 'black'), N('12', 360, 240, 'red'), N('25', 460, 240, 'red'), N('15', 420, 320, 'red')],
+      [{ from: '20', to: '10' }, { from: '20', to: '30' }, { from: '10', to: '12' }, { from: '12', to: '15' }, { from: '30', to: '25' }], ['12', '15'], '右旋 15'))
+    steps.push(mk('修复第二步：对 10 左旋，12 升为 20 的左孩子并染黑，10、15 染红。',
+      47, [N('20', 360, 80, 'black'), N('12', 200, 160, 'black'), N('30', 520, 160, 'black'), N('10', 120, 240, 'red'), N('15', 280, 240, 'red'), N('25', 450, 240, 'red')],
+      [{ from: '20', to: '12' }, { from: '20', to: '30' }, { from: '12', to: '10' }, { from: '12', to: '15' }, { from: '30', to: '25' }], ['12', '10', '15'], '左旋 10 + 变色'))
+    steps.push(mk(
+      '最终检查 5 条性质：根 20 黑 ✓；红节点 10/15/25 的子节点都是黑 ✓；每条根到 null 路径恰有 2 个黑节点 ✓。',
+      51, [N('20', 360, 80, 'black'), N('12', 200, 160, 'black'), N('30', 520, 160, 'black'), N('10', 120, 240, 'red'), N('15', 280, 240, 'red'), N('25', 450, 240, 'red')],
+      [{ from: '20', to: '12' }, { from: '20', to: '30' }, { from: '12', to: '10' }, { from: '12', to: '15' }, { from: '30', to: '25' }],
+      ['20', '12', '30', '10', '15', '25'], '5 条性质全部满足'
+    ))
+    steps.push(mk(
+      '完成：6 个节点、3 层高度、O(log n) 查找。对比：若按 10→12→15→20→25→30 顺序插入普通 BST，会退化成 6 层链表。',
+      32, [N('20', 360, 80, 'black'), N('12', 200, 160, 'black'), N('30', 520, 160, 'black'), N('10', 120, 240, 'red'), N('15', 280, 240, 'red'), N('25', 450, 240, 'red')],
+      [{ from: '20', to: '12' }, { from: '20', to: '30' }, { from: '12', to: '10' }, { from: '12', to: '15' }, { from: '30', to: '25' }],
+      undefined, 'O(log n) 稳定平衡'
+    ))
+    return steps
+  },
+}
+
+// ============================================================
 // 导出全部
 // ============================================================
 export const allDataStructures: DSDefinition[] = [
@@ -984,4 +1257,6 @@ export const allDataStructures: DSDefinition[] = [
   trieDS,
   unionFindDS,
   arrayListDS,
+  skipListDS,
+  rbtDS,
 ]
