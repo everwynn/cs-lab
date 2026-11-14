@@ -1,0 +1,62 @@
+---
+/**
+ * AlgorithmNav — 算法详情页底部「同分类上一页 / 下一页」导航
+ *
+ * 由 BaseLayout 自动注入，根据当前 URL 匹配算法分类数据；
+ * 非算法详情页（列表页、其他板块）渲染为空。
+ */
+import { findAlgorithmNeighbors } from '../utils/algorithmCategories';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const pathname = Astro.url.pathname.startsWith(base)
+  ? Astro.url.pathname.slice(base.length)
+  : Astro.url.pathname;
+
+const match = pathname.match(/^\/algorithms\/([^/]+)\/([^/]+)\/?$/);
+const nav = match ? findAlgorithmNeighbors(`${match[1]}/${match[2]}`) : null;
+
+const cardBase =
+  'group flex flex-col gap-1.5 p-4 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 transition-colors hover:border-accent/60 dark:hover:border-accent/60';
+const nameBase =
+  'text-sm font-bold text-gray-900 dark:text-white group-hover:text-accent-dark dark:group-hover:text-accent transition-colors';
+---
+
+{nav && (nav.prev || nav.next) && (
+  <nav class="max-w-5xl mx-auto px-6 pb-16" aria-label="同分类算法导航">
+    <div
+      class="flex items-center justify-between gap-3 pt-2 pb-3 border-t border-gray-100 dark:border-slate-800 text-xs text-gray-500 dark:text-slate-500"
+    >
+      <span class="inline-flex items-center gap-1.5">
+        <span class="text-sm">{nav.category.icon}</span>
+        <span class="font-medium text-gray-600 dark:text-slate-400">{nav.category.name}</span>
+        <span class="text-gray-300 dark:text-slate-700">·</span>
+        <span>第 {nav.index + 1} / {nav.total} 个</span>
+      </span>
+      <a href="/algorithms/" class="hover:text-accent-dark dark:hover:text-accent transition-colors">全部算法 ↗</a>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {nav.prev ? (
+        <a href={`/algorithms/${nav.prev.slug}/`} class={cardBase}>
+          <span class="text-xs text-gray-400 dark:text-slate-500">← 上一个</span>
+          <span class="flex items-center justify-between gap-2">
+            <span class={nameBase}>{nav.prev.name}</span>
+            <span class="text-xs font-mono text-gray-400 dark:text-slate-500 shrink-0">{nav.prev.complexity}</span>
+          </span>
+        </a>
+      ) : (
+        <span class="hidden sm:block" aria-hidden="true"></span>
+      )}
+      {nav.next ? (
+        <a href={`/algorithms/${nav.next.slug}/`} class={`${cardBase} sm:text-right`}>
+          <span class="text-xs text-gray-400 dark:text-slate-500">下一个 →</span>
+          <span class="flex items-center justify-between gap-2 sm:flex-row-reverse">
+            <span class={nameBase}>{nav.next.name}</span>
+            <span class="text-xs font-mono text-gray-400 dark:text-slate-500 shrink-0">{nav.next.complexity}</span>
+          </span>
+        </a>
+      ) : (
+        <span class="hidden sm:block" aria-hidden="true"></span>
+      )}
+    </div>
+  </nav>
+)}
